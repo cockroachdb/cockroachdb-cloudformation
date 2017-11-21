@@ -14,19 +14,14 @@
 
 ---
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'QS(5042) Kubernetes AWS CloudFormation Template: Create a Kubernetes
-  cluster in an existing VPC. This template is for users who want to add
-  a Kubernetes cluster to existing AWS infrastructure. The master node is
-  an auto-recovering Amazon EC2 instance. 1-20 additional EC2 instances in an
-  AutoScalingGroup join the Kubernetes cluster as nodes. An ELB provides
-  configurable external access to the Kubernetes API. If you choose a private
-  subnet, make sure it has a bastion host for SSH access to your cluster. If you
-  choose a public subnet, you can connect directly to the master node. The stack
-  is suitable for development and small single-team clusters. **WARNING** This
-  template creates four Amazon EC2 instances with default settings. You will
-  be billed for the AWS resources used if you create a stack from this template.
-  **SUPPORT** Please visit http://jump.heptio.com/aws-qs-help for support.
-  **NEXT STEPS** Please visit http://jump.heptio.com/aws-qs-next.'
+Description: 'Create a Kubernetes-orchestrated CockroachDB cluster in an existing VPC.
+  The Kubernetes master node is an auto-recovering Amazon EC2 instance. 1-15 additional
+  EC2 instances in an AutoScalingGroup join the Kubernetes cluster as nodes. An ELB
+  provides configurable external access to the Kubernetes API. If you choose a private
+  subnet, make sure it has a bastion host for SSH access to your cluster. If you use a
+  public subnet, you can connect directly to the master node. The stack is not suitable
+  for production use. **WARNING** This template creates several Amazon EC2 instances.
+  AWS will bill you for the resources this template uses.'
 
 # The Metadata tells AWS how to display the parameters during stack creation
 Metadata:
@@ -38,9 +33,14 @@ Metadata:
       - VPCID
       - AvailabilityZone
       - InstanceType
-      - DiskSizeGb
       - ClusterSubnetId
       - LoadBalancerSubnetId
+    - Label:
+        default: CockroachDB Settings
+      Parameters:
+        - Version
+        - DiskSizeGb
+        - K8sNodeCapacity
     - Label:
         default: Access Configuration
       Parameters:
@@ -50,7 +50,6 @@ Metadata:
     - Label:
         default: Kubernetes Configuration
       Parameters:
-      - K8sNodeCapacity
       - NetworkingProvider
     - Label:
         default: Advanced
@@ -60,6 +59,8 @@ Metadata:
       - ClusterAssociation
 
     ParameterLabels:
+      Version:
+        default: CockroachDB Version
       KeyName:
         default: SSH Key
       VPCID:
@@ -77,7 +78,7 @@ Metadata:
       DiskSizeGb:
         default: Disk Size (GiB)
       K8sNodeCapacity:
-        default: Node Capacity
+        default: Cluster Size
       QSS3BucketName:
         default: S3 Bucket
       QSS3KeyPrefix:
@@ -119,6 +120,15 @@ Parameters:
      to use this Quick Start Stack name.
     Type: String
 
+  Version:
+    Description: Version to use for the cluster.
+    Type: String
+    Default: v1.1.3
+    AllowedValues:
+    - v1.1.3
+    - v1.0.6
+    - v1.2-alpha.20171204
+
   # Default is t2.medium. EC2 instance type for the cluster
   # https://aws.amazon.com/ec2/instance-types/
   InstanceType:
@@ -126,8 +136,6 @@ Parameters:
     Type: String
     Default: t2.medium
     AllowedValues:
-    - t2.nano
-    - t2.micro
     - t2.small
     - t2.medium
     - t2.large
@@ -170,10 +178,10 @@ Parameters:
   # Specifies the size of the root disk for all EC2 instances, including master
   # and nodes.
   DiskSizeGb:
-    Description: 'Size of the root disk for the EC2 instances, in GiB.  Default: 40'
-    Default: 40
+    Description: 'Size of the disk for each CockroachDB node.'
+    Default: 5
     Type: Number
-    MinValue: 8
+    MinValue: 1
     MaxValue: 1024
 
   # Required. This is an availability zone from your region
@@ -206,15 +214,28 @@ Parameters:
     AllowedPattern: "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})"
     ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
 
-  # Default 2. Choose 1-20 initial nodes to run cluster workloads (in addition to the master node instance)
+  # Default 3. Choose initial nodes to run cluster workloads (in addition to the master node instance)
   # You can scale up your cluster later and add more nodes
   K8sNodeCapacity:
-    Default: '2'
-    Description: Initial number of Kubernetes nodes (1-20).
+    Default: '3'
+    Description: Initial number of CockroachDB nodes.
     Type: Number
-    MinValue: '1'
-    MaxValue: '20'
-    ConstraintDescription: must be between 1 and 20 EC2 instances.
+    AllowedValues:
+    - 1
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+    - 10
+    - 11
+    - 12
+    - 13
+    - 14
+    - 15
+
 
   # S3 Bucket configuration: allows users to use their own downstream snapshots
   # of the quickstart-aws-vpc and quickstart-linux-bastion templates
@@ -224,7 +245,7 @@ Parameters:
       letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen
       (-).
 
-    Default: quickstart-reference
+    Default: cockroach-cloudformation
     Description: Only change this if you have set up assets, like your own networking
       configuration, in an S3 bucket. This and the S3 Key Prefix parameter let you access
       scripts from the scripts/ and templates/ directories of your own fork of the Heptio
@@ -239,7 +260,7 @@ Parameters:
     ConstraintDescription: Quick Start key prefix can include numbers, lowercase letters,
       uppercase letters, hyphens (-), and forward slash (/). It cannot start or end
       with forward slash (/) because they are automatically appended.
-    Default: heptio/latest
+    Default: kubernetes
     Description: Only change this if you have set up assets in an S3 bucket, as explained
       in the S3 Bucket parameter. The S3 key prefix can include numbers, lowercase letters,
       uppercase letters, hyphens (-), and forward slashes (/). It cannot start or end with
@@ -262,7 +283,6 @@ Parameters:
 Mappings:
 
   # http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html
-  RegionMap:
   RegionMap:
     us-west-1:
       '64': ami-965965f6
@@ -292,6 +312,15 @@ Mappings:
       '64': ami-4686aa23
     us-west-2:
       '64': ami-f431fe8c
+
+  VersionTagMap:
+    v1.1.3:
+      'image': 'cockroachdb/cockroach:v1.1.3'
+    v1.0.6:
+      'image': 'cockroachdb/cockroach:v1.0.6'
+    v1.2-alpha.20171204:
+      'image': 'cockroachdb/cockroach-unstable:v1.2-alpha.20171204'
+
 
 # Helper Conditions which help find the right values for resources
 Conditions:
@@ -339,6 +368,11 @@ Resources:
               context:
                 StackName: !Ref AWS::StackName
 
+            # Script to resize default CockroachDB statefulsets
+            "/tmp/update-crdb-statefulset.py":
+              source: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/scripts/update-crdb-statefulset.py"
+              mode: '000755'
+
             # Installation script for the Cloudwatch agent
             "/usr/local/aws/awslogs-agent-setup.py":
               source: https://s3.amazonaws.com/aws-cloudwatch/downloads/latest/awslogs-agent-setup.py
@@ -360,7 +394,15 @@ Resources:
                 NetworkingProviderUrl: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/scripts/${NetworkingProvider}.yaml"
                 DashboardUrl: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/scripts/dashboard.yaml"
                 StorageClassUrl: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/scripts/default.storageclass.yaml"
+                NodePortConfigUrl: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/scripts/cockroachdb-nodeport-config.yaml"
                 Region: !Ref AWS::Region
+                CockroachDockerVersionTag:
+                    Fn::FindInMap:
+                    - VersionTagMap
+                    - !Ref Version
+                    - 'image'
+                CockroachNodeCount: !Ref K8sNodeCapacity
+                CockroachVolumeSize: !Ref DiskSizeGb
 
           commands:
             # Override the AMI binaries with any kubelet/kubeadm/kubectl binaries in the S3 bucket
@@ -372,7 +414,6 @@ Resources:
             # Enable the Cloudwatch service and launch it
             "02-cloudwatch-service-config":
               command: "systemctl enable awslogs.service && systemctl start awslogs.service"
-
             # Run the master setup
             "03-master-setup":
               command: "/tmp/setup-k8s-master.sh"
@@ -395,6 +436,8 @@ Resources:
         # The ClusterSecGroupCrossTalk rules allow all instances in the same stack to communicate internally
         # The ClusterSecGroupAllow22 rules allow external communication on port 22 from a chosen CIDR range
         # The ClusterSecGroupAllow6443FromLB rules allow HTTPS access to the load balancer on port 6443
+        # The ClusterSecGroupAllow30101FromLB rules allow HTTPS access to the load balancer on port 30101
+        # The ClusterSecGroupAllow30102FromLB rules allow HTTPS access to the load balancer on port 30102
         GroupSet:
         - !Ref ClusterSecGroup
       # Designates a name for this EC2 instance that will appear in the instances list (k8s-master)
@@ -424,11 +467,6 @@ Resources:
         - RegionMap
         - !Ref AWS::Region
         - '64'
-      BlockDeviceMappings:
-      - DeviceName: '/dev/sda1'
-        Ebs:
-          VolumeSize: !Ref DiskSizeGb
-          VolumeType: gp2
       # The userdata script is launched on startup, but contains only the commands that call out to cfn-init, which runs
       # the commands in the metadata above, and cfn-signal, which signals when the initialization is complete.
       UserData:
@@ -636,11 +674,6 @@ Resources:
         - RegionMap
         - !Ref AWS::Region
         - '64'
-      BlockDeviceMappings:
-      - DeviceName: '/dev/sda1'
-        Ebs:
-          VolumeSize: !Ref DiskSizeGb
-          VolumeType: gp2
       # Type of instance; the default is t2.medium
       InstanceType: !Ref InstanceType
       # Adds our SSH key to the instance
@@ -663,6 +696,11 @@ Resources:
               --region '${AWS::Region}' \
               --resource LaunchConfig \
               --configsets node-setup
+
+            #@todo: This sleeps until the cluster is healthy. We ultimately want to check the individual node health
+            HEALTH_CODE=`curl -s -o /dev/null -w "%{http_code}" localhost:30101/health`
+            while [[ $HEALTH_CODE -ne 200 ]] ; do echo "waiting for cluster to become healthy"; sleep 30; \
+                HEALTH_CODE=`curl -s -o /dev/null -w "%{http_code}" localhost:30101/health`; done;
 
             /usr/local/bin/cfn-signal \
               --exit-code $? \
@@ -733,6 +771,26 @@ Resources:
       IpProtocol: tcp
       FromPort: '6443'
       ToPort: '6443'
+      SourceSecurityGroupId: !Ref ApiLoadBalancerSecGroup
+  ClusterSecGroupAllow30101FromLB:
+    Metadata:
+      Comment: Open up port 30101 for load balancing the CockroachDB cluster's Web UI traffic
+    Type: 'AWS::EC2::SecurityGroupIngress'
+    Properties:
+      GroupId: !Ref ClusterSecGroup
+      IpProtocol: tcp
+      FromPort: '30101'
+      ToPort: '30101'
+      SourceSecurityGroupId: !Ref ApiLoadBalancerSecGroup
+  ClusterSecGroupAllow30102FromLB:
+    Metadata:
+      Comment: Open up port 30102 for load balancing the CockroachDB cluster
+    Type: 'AWS::EC2::SecurityGroupIngress'
+    Properties:
+      GroupId: !Ref ClusterSecGroup
+      IpProtocol: tcp
+      FromPort: '30102'
+      ToPort: '30102'
       SourceSecurityGroupId: !Ref ApiLoadBalancerSecGroup
 
   # IAM role for nodes http://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html
@@ -856,6 +914,14 @@ Resources:
         InstancePort: 6443
         InstanceProtocol: TCP
         LoadBalancerPort: 443
+      - Protocol: TCP
+        InstancePort: 30101
+        InstanceProtocol: TCP
+        LoadBalancerPort: 8080
+      - Protocol: TCP
+        InstancePort: 30102
+        InstanceProtocol: TCP
+        LoadBalancerPort: 26257
       ConnectionSettings:
         IdleTimeout: 3600
       Subnets:
@@ -891,10 +957,21 @@ Resources:
       GroupDescription: Security group for API server load balancer
       VpcId: !Ref VPCID
       SecurityGroupIngress:
-        CidrIp: !Ref ApiLbLocation
-        FromPort: 443
-        ToPort: 443
-        IpProtocol: tcp
+        -
+          CidrIp: !Ref ApiLbLocation
+          FromPort: 443
+          ToPort: 443
+          IpProtocol: tcp
+        -
+          CidrIp: !Ref ApiLbLocation
+          FromPort: 8080
+          ToPort: 8080
+          IpProtocol: tcp
+        -
+          CidrIp: !Ref ApiLbLocation
+          FromPort: 26257
+          ToPort: 26257
+          IpProtocol: tcp
       Tags:
       - Key: Name
         Value: apiserver-lb-security-group
@@ -904,23 +981,18 @@ Resources:
 # like what IP address is assigned to your master node
 # Read Descriptions below for more detail
 Outputs:
+  WebUI:
+    Description: URL for the web ui for this cluster.
+    Value: !Sub 'http://${ApiLoadBalancer.DNSName}:8080'
+  ConnectionString:
+    Description: Connection string to your load-balanced cluster.
+    Value: !Sub 'postgresql://root@${ApiLoadBalancer.DNSName}:26257?application_name=cockroach&sslmode=disable'
   MasterInstanceId:
     Description: InstanceId of the master EC2 instance.
     Value: !Ref K8sMasterInstance
-
   MasterPrivateIp:
     Description: Private IP address of the master.
     Value: !GetAtt K8sMasterInstance.PrivateIp
-
   NodeGroupInstanceId:
     Description: InstanceId of the newly-created NodeGroup.
     Value: !Ref K8sNodeGroup
-
-  JoinNodes:
-    Description: Command to join more nodes to this cluster.
-    Value: !Sub "kubeadm join --token=${KubeadmToken.Token} ${K8sMasterInstance.PrivateIp}"
-
-  NextSteps:
-    Description: Verify your cluster and deploy a test application. Instructions -
-      http://jump.heptio.com/aws-qs-next
-    Value: http://jump.heptio.com/aws-qs-next

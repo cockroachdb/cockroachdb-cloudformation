@@ -1,0 +1,25 @@
+# Please edit the object below. Lines beginning with a '#' will be ignored,
+# and an empty file will abort the edit. If an error occurs while saving this file will be
+# reopened with the relevant failures.
+#
+apiVersion: v1
+kind: Service
+metadata:
+  name: crdb-elb-service
+spec:
+  ports:
+  - name: web-ui
+    nodePort: 30101
+    port: 30101
+    protocol: TCP
+    targetPort: 8080
+  - name: cockroachdb-node
+    nodePort: 30102
+    port: 30102
+    protocol: TCP
+    targetPort: 26257
+  selector:
+    app: cockroachdb
+  type: NodePort
+status:
+  loadBalancer: {}

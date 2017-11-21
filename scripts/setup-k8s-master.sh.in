@@ -29,6 +29,10 @@ test -n "{{NetworkingProviderUrl}}"
 test -n "{{DashboardUrl}}"
 test -n "{{StorageClassUrl}}"
 test -n "{{Region}}"
+test -n "{{CockroachNodeCount}}"
+test -n "{{CockroachVolumeSize}}"
+test -n "{{CockroachDockerVersionTag}}"
+test -n "{{NodePortConfigUrl}}"
 
 # kubeadm wants lowercase for DNS (as it probably should)
 LB_DNS=$(echo "{{LoadBalancerDns}}" | tr 'A-Z' 'a-z')
@@ -104,3 +108,17 @@ chmod 0600 $KUBECONFIG_OUTPUT
 mkdir -p /home/ubuntu/.kube
 cp /etc/kubernetes/admin.conf /home/ubuntu/.kube/config
 chown -R ubuntu:ubuntu /home/ubuntu/.kube
+
+####################
+#Install CockroachDB
+####################
+
+# update default config to use desired settings
+/tmp/update-crdb-statefulset.py \
+    https://cockroach-cloudformation.s3.amazonaws.com/kubernetes/scripts/cockroachdb-statefulset.yaml \
+    --size {{CockroachVolumeSize}} --version-tag {{CockroachDockerVersionTag}} > /tmp/cockroachdb-statefulset.yaml
+
+kubectl apply -f /tmp/cockroachdb-statefulset.yaml
+kubectl scale statefulset cockroachdb --replicas={{CockroachNodeCount}}
+kubectl create -f https://raw.githubusercontent.com/cockroachdb/cockroach/master/cloud/kubernetes/cluster-init.yaml
+kubectl create -f {{NodePortConfigUrl}}
