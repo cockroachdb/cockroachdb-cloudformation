@@ -381,6 +381,23 @@ Resources:
   # This creates a second stack that creates the actual Kubernetes cluster
   # within the new VPC
   K8sStack:
+    DependsOn:
+      - BastionHost
+      - BastionSecurityGroup
+      - DHCPOptions
+      - InternetGateway
+      - NATEIP
+      - NATGateway
+      - PrivateSubnet
+      - PrivateSubnetRoute
+      - PrivateSubnetRouteTable
+      - PrivateSubnetRouteTableAssociation
+      - PublicSubnet
+      - PublicSubnetRoute
+      - PublicSubnetRouteTable
+      - PublicSubnetRouteTableAssociation
+      - VPCDHCPOptionsAssociation
+      - VPCGatewayAttachment
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: https://cockroach-cloudformation.s3.amazonaws.com/kubernetes/templates/kubernetes-cluster.template

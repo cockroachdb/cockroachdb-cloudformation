@@ -344,10 +344,16 @@ Resources:
       LogGroupName: !Ref AWS::StackName
       RetentionInDays: 14
 
+  CustomResourcePipeline:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/templates/cr-backend-substack-template.template"
+
   # This is an EC2 instance that will serve as our master node
   K8sMasterInstance:
     Type: AWS::EC2::Instance
-    DependsOn: ApiLoadBalancer
+    DependsOn:
+    - ApiLoadBalancer
     Metadata:
       AWS::CloudFormation::Init:
         configSets:
@@ -372,6 +378,34 @@ Resources:
             "/tmp/update-crdb-statefulset.py":
               source: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/scripts/update-crdb-statefulset.py"
               mode: '000755'
+
+            # Script to tear down statefulsets when the stack is deleted
+            "/tmp/delete-statefulset.sh":
+              source: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/scripts/delete-statefulset.sh"
+              mode: '000755'
+
+            "/tmp/create-statefulset.sh":
+              source: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/scripts/create-statefulset.sh"
+              mode: '000755'
+
+            "/tmp/update-statefulset.sh":
+              source: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/scripts/update-statefulset.sh"
+              mode: '000755'
+
+            # resource bridge configuration
+            "/etc/cfn/bridge.d/statefulset.conf" :
+              content: !Join
+                - ''
+                -  - "[statefulset]\n"
+                   - "resource_type=Custom::StatefulSetDestructor\n"
+                   - "queue_url="
+                   - !GetAtt CustomResourcePipeline.Outputs.CustomResourceQueueURL
+                   - "\n"
+                   - "timeout=600\n"
+                   - "delete_action=/tmp/delete-statefulset.sh\n"
+                   - "update_action=/tmp/update-statefulset.sh\n"
+                   - "create_action=/tmp/create-statefulset.sh\n"
+
 
             # Installation script for the Cloudwatch agent
             "/usr/local/aws/awslogs-agent-setup.py":
@@ -403,7 +437,14 @@ Resources:
                     - 'image'
                 CockroachNodeCount: !Ref K8sNodeCapacity
                 CockroachVolumeSize: !Ref DiskSizeGb
-
+          services:
+            sysvinit:
+              cfn-resource-bridge:
+                  enabled: true
+                  ensureRunning: true
+                  files:
+                  - /etc/cfn/bridge.d/statefulset.conf
+                  - /tmp/delete-statefulset.sh
           commands:
             # Override the AMI binaries with any kubelet/kubeadm/kubectl binaries in the S3 bucket
             "00-kubernetes-override-binaries":
@@ -417,6 +458,13 @@ Resources:
             # Run the master setup
             "03-master-setup":
               command: "/tmp/setup-k8s-master.sh"
+            "04-setup-resource-bridge":
+              command: "git clone https://github.com/aws/aws-cfn-resource-bridge.git && cd aws-cfn-resource-bridge/ && \
+                python setup.py install && chmod 755 /usr/local/init/ubuntu/cfn-hup && \
+                chmod 755 /usr/local/init/ubuntu/cfn-resource-bridge && \
+                ln -s /usr/local/init/ubuntu/cfn-hup /etc/init.d/cfn-hup && \
+                ln -s /usr/local/init/ubuntu/cfn-resource-bridge /etc/init.d/cfn-resource-bridge && \
+                update-rc.d cfn-resource-bridge defaults"
     Properties:
       # Where the EC2 instance gets deployed geographically
       AvailabilityZone: !Ref AvailabilityZone
@@ -546,6 +594,19 @@ Resources:
     Version: "1.0"
     Properties:
       ServiceToken: !GetAtt GenKubeadmToken.Arn
+
+  # A custom resource to destroy our stateful sets when the stack is deleted
+  StatefulSet:
+    Type: "Custom::StatefulSetDestructor"
+    DependsOn:
+      - MasterRole
+      - MasterInstanceProfile
+      - K8sMasterInstance
+    Version: "1.0"
+    Properties:
+      ServiceToken: !GetAtt CustomResourcePipeline.Outputs.CustomResourceTopicARN
+
+
 
   # This is a CloudWatch alarm https://aws.amazon.com/cloudwatch/
   # If the master node is unresponsive for 5 minutes, AWS will attempt to recover it
@@ -882,6 +943,12 @@ Resources:
             - autoscaling:DescribeAutoScalingGroups
             - autoscaling:UpdateAutoScalingGroup
             Resource: "*"
+          - Effect: Allow
+            Action:
+            - sqs:ChangeMessageVisibility
+            - sqs:DeleteMessage
+            - sqs:ReceiveMessage
+            Resource: !GetAtt CustomResourcePipeline.Outputs.CustomResourceQueueARN
 
       - PolicyName: cwlogs
         PolicyDocument:

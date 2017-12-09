@@ -21,7 +21,7 @@ Next, scroll down and configure your security and cluster settings.
 Lastly, be sure to give the template permission to create the nested CockroachDB stack within the soon-to-be-created private subnet.
 ![Capabilities Approval](/images/cloudformation-capabilities.png?raw=true)
 
-The CloudFormation stack will say "complete" as soon as the cluster is ready to take requests. Depending on the size of your cluster, Kubernetes may continue scaling for a few minutes after the template is finished.
+In 10-15 minutes, the CloudFormation stack will say "CREATE_COMPLETE" and the cluster will be ready to take requests. Depending on the size of your cluster, Kubernetes may continue scaling for a few minutes after the template is finished.
 ![Completed Stack](/images/create-complete.png?raw=true)
 
 When the stack is complete, you will see three outputs to get you started: a link to the web ui, a connection string to your CockroachDB cluster, and the command to SSH, via the bastion host, into your Kubernetes master node.
@@ -61,7 +61,3 @@ Watch the cluster rebalance in the Web UI
 When you are finished using the cluster, you should delete it so AWS does not continue to charge you.
 
 You can learn how to do that [here](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-delete-stack.html).
-
-*Note: in this version (not ready for general use until [#10](https://github.com/nstewart/cockroachdb-cloudformation/issues/10) is fixed, you'll have to go into the EC2 console and manually delete the volumes that Kubernetes created.*
-
-The GA version of this template will handle this for you automatically.
