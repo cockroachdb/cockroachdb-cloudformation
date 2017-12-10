@@ -1,0 +1,22 @@
+#!/bin/bash -x
+
+test -n "{{CockroachNodeCount}}"
+
+exec 3>&1 # "save" stdout to fd 3
+exec &>> /tmp/create-healthcheck.log
+
+function error_exit() {
+    echo "{\"Reason\": \"$1\"}" >&3 3>&- # echo reason to stdout (instead of log) and then close fd 3
+    exit $2
+}
+
+export KUBECONFIG=/home/ubuntu/.kube/config
+
+#poll until all pods are up
+running_count=`kubectl get pods | grep Running | wc -l`
+
+while [[ $running_count -ne {{CockroachNodeCount}} ]] ; do echo "$running_count / {{CockroachNodeCount}} nodes running. Sleeping..."; sleep 10; \
+    running_count=`kubectl get pods | grep Running | wc -l`; done;
+
+echo "{}" >&3 3>&-  # echo success to stdout (instead of log) and then close fd 3
+exit 0

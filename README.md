@@ -21,7 +21,7 @@ Next, scroll down and configure your security and cluster settings.
 Lastly, be sure to give the template permission to create the nested CockroachDB stack within the soon-to-be-created private subnet.
 ![Capabilities Approval](/images/cloudformation-capabilities.png?raw=true)
 
-In 10-15 minutes, the CloudFormation stack will say "CREATE_COMPLETE" and the cluster will be ready to take requests. Depending on the size of your cluster, Kubernetes may continue scaling for a few minutes after the template is finished.
+In 10-15 minutes, the CloudFormation stack will say "CREATE_COMPLETE" and the cluster will be ready to process requests.
 ![Completed Stack](/images/create-complete.png?raw=true)
 
 When the stack is complete, you will see three outputs to get you started: a link to the web ui, a connection string to your CockroachDB cluster, and the command to SSH, via the bastion host, into your Kubernetes master node.

@@ -344,7 +344,12 @@ Resources:
       LogGroupName: !Ref AWS::StackName
       RetentionInDays: 14
 
-  CustomResourcePipeline:
+  StatefulSetPipeline:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/templates/cr-backend-substack-template.template"
+
+  HealthCheckPipeline:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/templates/cr-backend-substack-template.template"
@@ -379,7 +384,6 @@ Resources:
               source: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/scripts/update-crdb-statefulset.py"
               mode: '000755'
 
-            # Script to tear down statefulsets when the stack is deleted
             "/tmp/delete-statefulset.sh":
               source: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/scripts/delete-statefulset.sh"
               mode: '000755'
@@ -392,6 +396,20 @@ Resources:
               source: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/scripts/update-statefulset.sh"
               mode: '000755'
 
+            "/tmp/delete-healthcheck.sh":
+              source: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/scripts/delete-healthcheck.sh"
+              mode: '000755'
+
+            "/tmp/create-healthcheck.sh":
+              source: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/scripts/create-healthcheck.sh.in"
+              mode: '000755'
+              context:
+                CockroachNodeCount: !Ref K8sNodeCapacity
+
+            "/tmp/update-healthcheck.sh":
+              source: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/scripts/update-healthcheck.sh"
+              mode: '000755'
+
             # resource bridge configuration
             "/etc/cfn/bridge.d/statefulset.conf" :
               content: !Join
@@ -399,13 +417,25 @@ Resources:
                 -  - "[statefulset]\n"
                    - "resource_type=Custom::StatefulSetDestructor\n"
                    - "queue_url="
-                   - !GetAtt CustomResourcePipeline.Outputs.CustomResourceQueueURL
+                   - !GetAtt StatefulSetPipeline.Outputs.CustomResourceQueueURL
                    - "\n"
                    - "timeout=600\n"
                    - "delete_action=/tmp/delete-statefulset.sh\n"
                    - "update_action=/tmp/update-statefulset.sh\n"
                    - "create_action=/tmp/create-statefulset.sh\n"
 
+            "/etc/cfn/bridge.d/healthcheck.conf" :
+              content: !Join
+                - ''
+                -  - "[healthcheck]\n"
+                   - "resource_type=Custom::CockroachDBClusterHealthCheck\n"
+                   - "queue_url="
+                   - !GetAtt HealthCheckPipeline.Outputs.CustomResourceQueueURL
+                   - "\n"
+                   - "timeout=600\n"
+                   - "delete_action=/tmp/delete-healthcheck.sh\n"
+                   - "update_action=/tmp/update-healthcheck.sh\n"
+                   - "create_action=/tmp/create-healthcheck.sh\n"
 
             # Installation script for the Cloudwatch agent
             "/usr/local/aws/awslogs-agent-setup.py":
@@ -444,7 +474,13 @@ Resources:
                   ensureRunning: true
                   files:
                   - /etc/cfn/bridge.d/statefulset.conf
+                  - /etc/cfn/bridge.d/healthcheck.conf
                   - /tmp/delete-statefulset.sh
+                  - /tmp/create-statefulset.sh
+                  - /tmp/update-statefulset.sh
+                  - /tmp/delete-healthcheck.sh
+                  - /tmp/create-healthcheck.sh
+                  - /tmp/update-healthcheck.sh
           commands:
             # Override the AMI binaries with any kubelet/kubeadm/kubectl binaries in the S3 bucket
             "00-kubernetes-override-binaries":
@@ -604,8 +640,15 @@ Resources:
       - K8sMasterInstance
     Version: "1.0"
     Properties:
-      ServiceToken: !GetAtt CustomResourcePipeline.Outputs.CustomResourceTopicARN
+      ServiceToken: !GetAtt StatefulSetPipeline.Outputs.CustomResourceTopicARN
 
+  CockroachDBClusterHealth:
+    Type: "Custom::CockroachDBClusterHealthCheck"
+    DependsOn:
+      - K8sNodeGroup
+    Version: "1.0"
+    Properties:
+      ServiceToken: !GetAtt HealthCheckPipeline.Outputs.CustomResourceTopicARN
 
 
   # This is a CloudWatch alarm https://aws.amazon.com/cloudwatch/
@@ -757,11 +800,6 @@ Resources:
               --region '${AWS::Region}' \
               --resource LaunchConfig \
               --configsets node-setup
-
-            #@todo: This sleeps until the cluster is healthy. We ultimately want to check the individual node health
-            HEALTH_CODE=`curl -s -o /dev/null -w "%{http_code}" localhost:30101/health`
-            while [[ $HEALTH_CODE -ne 200 ]] ; do echo "waiting for cluster to become healthy"; sleep 30; \
-                HEALTH_CODE=`curl -s -o /dev/null -w "%{http_code}" localhost:30101/health`; done;
 
             /usr/local/bin/cfn-signal \
               --exit-code $? \
@@ -942,14 +980,10 @@ Resources:
             - ecr:BatchGetImage
             - autoscaling:DescribeAutoScalingGroups
             - autoscaling:UpdateAutoScalingGroup
-            Resource: "*"
-          - Effect: Allow
-            Action:
             - sqs:ChangeMessageVisibility
             - sqs:DeleteMessage
             - sqs:ReceiveMessage
-            Resource: !GetAtt CustomResourcePipeline.Outputs.CustomResourceQueueARN
-
+            Resource: "*"
       - PolicyName: cwlogs
         PolicyDocument:
           Version: '2012-10-17'
@@ -991,6 +1025,12 @@ Resources:
         LoadBalancerPort: 26257
       ConnectionSettings:
         IdleTimeout: 3600
+      HealthCheck:
+        HealthyThreshold: 2
+        UnhealthyThreshold: 2
+        Interval: 5
+        Timeout: 2
+        Target: HTTP:30101/health
       Subnets:
       - Fn::If:
         - LoadBalancerSubnetProvidedCondition
