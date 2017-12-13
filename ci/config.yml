@@ -1,7 +1,6 @@
 global:
-  marketplace-ami: false
-  owner: quickstart-eng@amazon.com
-  qsname: quickstart-heptio
+  owner: nate@cockroachlabs.com
+  qsname: cockroachdb-cloudformation
   reporting: true
   regions:
     - ap-northeast-1
@@ -16,6 +15,14 @@ global:
     - us-west-2
 
 tests:
-  heptio:
-    parameter_input: kubernetes-cluster-with-new-vpc-inputs.json
+  single-node-vpc:
+    regions:
+    - us-east-1
+    parameter_input: new-vpc-inputs-single-node.json
     template_file: kubernetes-cluster-with-new-vpc.template
+  multi-node-vpc:
+    regions:
+    - us-east-1
+    parameter_input: new-vpc-inputs-multi-node.json
+    template_file: kubernetes-cluster-with-new-vpc.template
+

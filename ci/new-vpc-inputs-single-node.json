@@ -1,0 +1,22 @@
+[
+    {
+        "ParameterKey": "AdminIngressLocation",
+        "ParameterValue": "1.2.3.4/32"
+    },
+    {
+        "ParameterKey": "KeyName",
+        "ParameterValue": "aws-quickstart-test"
+    },
+    {
+        "ParameterKey": "InstanceType",
+        "ParameterValue": "t2.small"
+    },
+    {
+        "ParameterKey": "DiskSizeGb",
+        "ParameterValue": "1"
+    },
+    {
+        "ParameterKey": "K8sNodeCapacity",
+        "ParameterValue": "1"
+    }
+]

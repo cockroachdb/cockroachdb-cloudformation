@@ -16,14 +16,12 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: 'Create a Kubernetes-orchestrated CockroachDB cluster in a new VPC.
   The Kubernetes master node is an auto-recovering Amazon EC2 instance. 1-15
-  additional EC2 instances in an AutoScalingGroup join the Kubernetes cluster as nodes.
-  An ELB provides external access to the cluster. The new VPC includes a bastion host
-  to grant SSH access to the Kubernetes cluster''s private subnet. This template creates
-  two stacks: one for the new VPC and one for the cluster. The stack is not suitable
+  additional EC2 instances in an Auto Scaling group join the Kubernetes cluster as nodes.
+  An ELB provides external access to the cluster. The VPC includes a bastion host
+  to grant SSH access to the Kubernetes cluster''s private subnet. This stack is not suitable
   for production use due to its minimal security and durability guarantees.
-  **WARNING** This template creates several Amazon EC2 instances ( Cluster Size + 1 K8s master + 1 bastion host).
-  AWS will bill you for the resources this template uses. **Warning** EBS volumes created by Kubernetes are not automatically deleted with
-  the other CloudFormation resources. These need to be manually removed.'
+  **WARNING** This template creates several Amazon EC2 instances ( [Cluster Size] nodes + 1 K8s master node + 1 t2.micro bastion host).
+  AWS will bill you for the resources this template uses.'
 
 # The Metadata tells AWS how to display the parameters during stack creation
 Metadata:
@@ -41,6 +39,11 @@ Metadata:
       - K8sNodeCapacity
       - InstanceType
       - DiskSizeGb
+    - Label:
+        default: Advanced
+      Parameters:
+      - QSS3BucketName
+      - QSS3KeyPrefix
 
     ParameterLabels:
       Version:
@@ -48,13 +51,17 @@ Metadata:
       KeyName:
         default: SSH Key
       AdminIngressLocation:
-        default: Admin Ingress Location
+        default: IP Address Whitelist
       InstanceType:
         default: Instance Type
       DiskSizeGb:
         default: Node Disk Size (GiB)
       K8sNodeCapacity:
         default: Cluster Size
+      QSS3BucketName:
+        default: AWS Quick Start S3 Bucket
+      QSS3KeyPrefix:
+        default: AWS Quick Start S3 Key Prefix
 
 # The Parameters allow the user to pass custom settings to the stack before creation
 Parameters:
@@ -155,6 +162,29 @@ Parameters:
     - 13
     - 14
     - 15
+
+  QSS3BucketName:
+    AllowedPattern: "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$"
+    ConstraintDescription: Quick Start bucket name can include numbers, lowercase
+      letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen
+      (-).
+
+    Default: cockroachdb-cloudformation
+    Description: This and the S3 Key Prefix parameter let you access
+      scripts from the scripts/ and templates/ directories in your own fork of the CockroachDB
+      Quick Start assets.
+    Type: String
+
+  QSS3KeyPrefix:
+    AllowedPattern: "^[0-9a-zA-Z-]+(/[0-9a-zA-Z-]+)*$"
+    ConstraintDescription: Quick Start key prefix can include numbers, lowercase letters,
+      uppercase letters, hyphens (-), and forward slash (/). It cannot start or end
+      with forward slash (/) because they are automatically appended.
+    Default: kubernetes
+    Description: This and the S3 Bucket parameter let you access scripts from
+      the scripts/ and templates/ directories in your own fork of the CockroachDB
+      Quick Start assets.
+    Type: String
 
 
 Mappings:
@@ -363,7 +393,7 @@ Resources:
             curl -s -o $BASTION_BOOTSTRAP_FILE $BASTION_BOOTSTRAP
             chmod +x $BASTION_BOOTSTRAP_FILE
 
-            ./$BASTION_BOOTSTRAP_FILE --banner https://cockroach-cloudformation.s3.amazonaws.com/kubernetes/scripts/banner_message.txt --enable true
+            ./$BASTION_BOOTSTRAP_FILE --banner https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/scripts/banner_message.txt --enable true
 
   # Open up port 22 for SSH for the bastion host
   BastionSecurityGroup:
@@ -400,7 +430,7 @@ Resources:
       - VPCGatewayAttachment
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://cockroach-cloudformation.s3.amazonaws.com/kubernetes/templates/kubernetes-cluster.template
+      TemplateURL: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/templates/kubernetes-cluster.template"
       Parameters:
         VPCID: !Ref VPC
         AvailabilityZone: !GetAtt PrivateSubnet.AvailabilityZone
@@ -413,10 +443,9 @@ Resources:
         ApiLbLocation: !Ref AdminIngressLocation
         KeyName: !Ref KeyName
         K8sNodeCapacity: !Ref K8sNodeCapacity
-        QSS3BucketName: cockroach-cloudformation
-        QSS3KeyPrefix: kubernetes
+        QSS3BucketName: !Ref QSS3BucketName
+        QSS3KeyPrefix: !Ref QSS3KeyPrefix
         ClusterAssociation: !Ref AWS::StackName
-        NetworkingProvider: calico
         LoadBalancerSubnetId: !Ref PublicSubnet
 
 Outputs:

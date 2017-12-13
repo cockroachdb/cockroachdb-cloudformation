@@ -16,7 +16,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Description: 'Create a Kubernetes-orchestrated CockroachDB cluster in an existing VPC.
   The Kubernetes master node is an auto-recovering Amazon EC2 instance. 1-15 additional
-  EC2 instances in an AutoScalingGroup join the Kubernetes cluster as nodes. An ELB
+  EC2 instances in an Auto Scaling group join the Kubernetes cluster as nodes. An ELB
   provides configurable external access to the Kubernetes API. If you choose a private
   subnet, make sure it has a bastion host for SSH access to your cluster. If you use a
   public subnet, you can connect directly to the master node. The stack is not suitable
@@ -48,10 +48,6 @@ Metadata:
       - ApiLbLocation
       - KeyName
     - Label:
-        default: Kubernetes Configuration
-      Parameters:
-      - NetworkingProvider
-    - Label:
         default: Advanced
       Parameters:
       - QSS3BucketName
@@ -70,9 +66,9 @@ Metadata:
       ClusterSubnetId:
         default: Subnet
       SSHLocation:
-        default: SSH Ingress Location
+        default: SSH IP Address Whitelist
       ApiLbLocation:
-        default: API Ingress Location
+        default: API IP Address Whitelist
       InstanceType:
         default: Instance Type
       DiskSizeGb:
@@ -85,8 +81,6 @@ Metadata:
         default: S3 Key Prefix
       ClusterAssociation:
         default: Cluster Association
-      NetworkingProvider:
-        default: Networking Provider
       LoadBalancerSubnetId:
         default: Load Balancer Subnet
 
@@ -187,8 +181,7 @@ Parameters:
   # Required. This is an availability zone from your region
   # http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html
   AvailabilityZone:
-    Description: The Availability Zone for this cluster. Heptio recommends
-      that you run one cluster per AZ and use tooling to coordinate across AZs.
+    Description: The Availability Zone for this cluster.
     Type: AWS::EC2::AvailabilityZone::Name
     ConstraintDescription: must be the name of an AWS Availability Zone
 
@@ -245,14 +238,10 @@ Parameters:
       letters, uppercase letters, and hyphens (-). It cannot start or end with a hyphen
       (-).
 
-    Default: cockroach-cloudformation
-    Description: Only change this if you have set up assets, like your own networking
-      configuration, in an S3 bucket. This and the S3 Key Prefix parameter let you access
-      scripts from the scripts/ and templates/ directories of your own fork of the Heptio
-      Quick Start assets, uploaded to S3 and stored at
-      ${bucketname}.s3.amazonaws.com/${prefix}/scripts/somefile.txt.S3. The bucket name
-      can include numbers, lowercase letters, uppercase letters, and hyphens (-).
-      It cannot start or end with a hyphen (-).
+    Default: cockroachdb-cloudformation
+    Description: This and the S3 Key Prefix parameter let you access scripts from
+      the scripts/ and templates/ directories of your own fork of the CockroachDB
+      Quick Start assets.
     Type: String
 
   QSS3KeyPrefix:
@@ -261,23 +250,11 @@ Parameters:
       uppercase letters, hyphens (-), and forward slash (/). It cannot start or end
       with forward slash (/) because they are automatically appended.
     Default: kubernetes
-    Description: Only change this if you have set up assets in an S3 bucket, as explained
-      in the S3 Bucket parameter. The S3 key prefix can include numbers, lowercase letters,
-      uppercase letters, hyphens (-), and forward slashes (/). It cannot start or end with
-      forward slashes (/) because they are automatically appended.
+    Description: This and the S3 Bucket Name parameter let you access scripts from
+      the scripts/ and templates/ directories of your own fork of the CockroachDB
+      Quick Start assets.
     Type: String
 
-  NetworkingProvider:
-    AllowedValues:
-    - calico
-    - weave
-    ConstraintDescription: 'Currently supported values are "calico" and "weave"'
-    Default: calico
-    Description: Choose the networking provider to use for communication between
-      pods in the Kubernetes cluster. Supported configurations are calico
-      (https://docs.projectcalico.org/v2.6/getting-started/kubernetes/installation/hosted/kubeadm/)
-      and weave (https://github.com/weaveworks/weave/blob/master/site/kube-addon.md).
-    Type: String
 
 # http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/mappings-section-structure.html
 Mappings:
@@ -455,7 +432,7 @@ Resources:
                 LoadBalancerDns: !GetAtt ApiLoadBalancer.DNSName
                 LoadBalancerName: !Ref ApiLoadBalancer
                 ClusterToken: !GetAtt KubeadmToken.Token
-                NetworkingProviderUrl: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/scripts/${NetworkingProvider}.yaml"
+                NetworkingProviderUrl: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/scripts/calico.yaml"
                 DashboardUrl: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/scripts/dashboard.yaml"
                 StorageClassUrl: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/scripts/default.storageclass.yaml"
                 NodePortConfigUrl: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/scripts/cockroachdb-nodeport-config.yaml"
