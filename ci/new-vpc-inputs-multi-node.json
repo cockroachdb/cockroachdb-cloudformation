@@ -9,7 +9,7 @@
     },
     {
         "ParameterKey": "InstanceType",
-        "ParameterValue": "t2.small"
+        "ParameterValue": "m3.medium"
     },
     {
         "ParameterKey": "DiskSizeGb",
@@ -17,6 +17,14 @@
     },
     {
         "ParameterKey": "K8sNodeCapacity",
-        "ParameterValue": "5"
+        "ParameterValue": "3"
+    },
+    {
+        "ParameterKey": "QSS3BucketName",
+        "ParameterValue": "$[taskcat_autobucket]"
+    },
+    {
+        "ParameterKey": "QSS3KeyPrefix",
+        "ParameterValue": "cockroachdb-cloudformation"
     }
 ]
