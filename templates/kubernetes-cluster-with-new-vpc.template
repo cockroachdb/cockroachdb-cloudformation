@@ -85,7 +85,6 @@ Parameters:
     Default: t2.medium
     AllowedValues:
     - t2.medium
-    - m3.medium
     - m4.large
     - m4.xlarge
     - m4.2xlarge
