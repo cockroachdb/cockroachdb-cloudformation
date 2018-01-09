@@ -15,8 +15,18 @@ export KUBECONFIG=/home/ubuntu/.kube/config
 #poll until all pods are up
 running_count=`kubectl get pods | grep Running | wc -l`
 
-while [[ $running_count -ne {{CockroachNodeCount}} ]] ; do echo "$running_count / {{CockroachNodeCount}} nodes running. Sleeping..."; sleep 10; \
+retry_count=0 #wait for 10 mins
+
+while [[ $running_count -ne {{CockroachNodeCount}} && retry_count -lt 60 ]] ; \
+    do echo "Try $retry_count : $running_count / {{CockroachNodeCount}} nodes running. Sleeping..."; retry_count=$((retry_count+1)) && sleep 10; \
     running_count=`kubectl get pods | grep Running | wc -l`; done;
 
-echo "{}" >&3 3>&-  # echo success to stdout (instead of log) and then close fd 3
-exit 0
+if [ $running_count -ne {{CockroachNodeCount}} ]
+then
+    error_exit "Could not spin up {{CockroachNodeCount}} nodes." 1
+else
+    echo "{}" >&3 3>&- # echo reason to stdout (instead of log) and then close fd 3
+    exit 0
+fi
+
+
