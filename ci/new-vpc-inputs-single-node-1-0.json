@@ -8,15 +8,23 @@
         "ParameterValue": "aws-quickstart-test"
     },
     {
-        "ParameterKey": "InstanceType",
-        "ParameterValue": "t2.small"
-    },
-    {
         "ParameterKey": "DiskSizeGb",
         "ParameterValue": "1"
     },
     {
         "ParameterKey": "K8sNodeCapacity",
-        "ParameterValue": "5"
+        "ParameterValue": "1"
+    },
+    {
+        "ParameterKey": "Version",
+        "ParameterValue": "v1.0.6"
+    },
+    {
+        "ParameterKey": "QSS3BucketName",
+        "ParameterValue": "$[taskcat_autobucket]"
+    },
+    {
+        "ParameterKey": "QSS3KeyPrefix",
+        "ParameterValue": "cockroachdb-cloudformation"
     }
 ]

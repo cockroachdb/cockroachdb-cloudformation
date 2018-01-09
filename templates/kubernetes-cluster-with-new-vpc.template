@@ -68,9 +68,9 @@ Parameters:
   Version:
     Description: Version to use for the cluster.
     Type: String
-    Default: v1.1.3
+    Default: v1.1.4
     AllowedValues:
-    - v1.1.3
+    - v1.1.4
     - v1.0.6
     - v2.0-alpha.20171218
 
@@ -84,43 +84,17 @@ Parameters:
     Type: String
     Default: t2.medium
     AllowedValues:
-    - t2.small
     - t2.medium
-    - t2.large
-    - m3.medium
-    - m3.large
-    - m3.xlarge
-    - m3.2xlarge
     - m4.large
     - m4.xlarge
     - m4.2xlarge
     - m4.4xlarge
     - m4.10xlarge
-    - c3.large
-    - c3.xlarge
-    - c3.2xlarge
-    - c3.4xlarge
-    - c3.8xlarge
     - c4.large
     - c4.xlarge
     - c4.2xlarge
     - c4.4xlarge
     - c4.8xlarge
-    - g2.2xlarge
-    - g2.8xlarge
-    - r3.large
-    - r3.xlarge
-    - r3.2xlarge
-    - r3.4xlarge
-    - r3.8xlarge
-    - i2.xlarge
-    - i2.2xlarge
-    - i2.4xlarge
-    - i2.8xlarge
-    - d2.xlarge
-    - d2.2xlarge
-    - d2.4xlarge
-    - d2.8xlarge
     ConstraintDescription: must be a valid EC2 instance type.
 
   # Specifies the size of the root disk for all EC2 instances, including master

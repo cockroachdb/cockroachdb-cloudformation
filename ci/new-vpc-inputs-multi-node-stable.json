@@ -13,7 +13,7 @@
     },
     {
         "ParameterKey": "K8sNodeCapacity",
-        "ParameterValue": "1"
+        "ParameterValue": "3"
     },
     {
         "ParameterKey": "Version",
