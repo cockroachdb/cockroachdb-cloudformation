@@ -8,10 +8,6 @@
         "ParameterValue": "aws-quickstart-test"
     },
     {
-        "ParameterKey": "InstanceType",
-        "ParameterValue": "m3.medium"
-    },
-    {
         "ParameterKey": "DiskSizeGb",
         "ParameterValue": "1"
     },
