@@ -16,6 +16,10 @@
         "ParameterValue": "3"
     },
     {
+        "ParameterKey": "Version",
+        "ParameterValue": "v1.1.4"
+    },
+    {
         "ParameterKey": "QSS3BucketName",
         "ParameterValue": "$[taskcat_autobucket]"
     },
