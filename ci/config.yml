@@ -20,14 +20,19 @@ tests:
     - us-east-1
     parameter_input: new-vpc-inputs-single-node.json
     template_file: kubernetes-cluster-with-new-vpc.template
-#  single-node-vpc-alpha:
-#    regions:
-#    - us-east-1
-#    parameter_input: new-vpc-inputs-single-node-alpha.json
-#    template_file: kubernetes-cluster-with-new-vpc.template
-#  multi-node-vpc:
-#    regions:
-#    - us-east-1
-#    parameter_input: new-vpc-inputs-multi-node.json
-#    template_file: kubernetes-cluster-with-new-vpc.template
+  single-node-vpc-alpha:
+    regions:
+    - us-east-1
+    parameter_input: new-vpc-inputs-single-node-alpha.json
+    template_file: kubernetes-cluster-with-new-vpc.template
+  single-node-vpc-1-0:
+    regions:
+    - us-east-1
+    parameter_input: new-vpc-inputs-single-node-1-0.json
+    template_file: kubernetes-cluster-with-new-vpc.template
+  multi-node-vpc:
+    regions:
+    - us-east-1
+    parameter_input: new-vpc-inputs-multi-node.json
+    template_file: kubernetes-cluster-with-new-vpc.template
 
