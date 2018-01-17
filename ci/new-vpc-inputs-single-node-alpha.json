@@ -17,7 +17,7 @@
     },
     {
         "ParameterKey": "Version",
-        "ParameterValue": "v2.0-alpha.20171218"
+        "ParameterValue": "v2.0-alpha.20180116"
     },
     {
         "ParameterKey": "QSS3BucketName",
