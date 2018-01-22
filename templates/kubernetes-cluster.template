@@ -121,7 +121,7 @@ Parameters:
     AllowedValues:
     - v1.1.4
     - v1.0.6
-    - v2.0-alpha.20171218
+    - v2.0-alpha.20180122
 
 
   # https://aws.amazon.com/ec2/instance-types/
@@ -147,7 +147,7 @@ Parameters:
   # and nodes.
   DiskSizeGb:
     Description: 'Size of the disk for each CockroachDB node.'
-    Default: 5
+    Default: 20
     Type: Number
     MinValue: 1
     MaxValue: 1024
@@ -269,8 +269,8 @@ Mappings:
       'image': 'cockroachdb/cockroach:v1.1.4'
     v1.0.6:
       'image': 'cockroachdb/cockroach:v1.0.6'
-    v2.0-alpha.20171218:
-      'image': 'cockroachdb/cockroach-unstable:v2.0-alpha.20171218'
+    v2.0-alpha.20180122:
+      'image': 'cockroachdb/cockroach-unstable:v2.0-alpha.20180122'
 
 
 # Helper Conditions which help find the right values for resources
