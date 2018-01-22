@@ -72,7 +72,7 @@ Parameters:
     AllowedValues:
     - v1.1.4
     - v1.0.6
-    - v2.0-alpha.20171218
+    - v2.0-alpha.20180122
 
   KeyName:
     Description: Existing EC2 KeyPair for SSH access.
@@ -101,7 +101,7 @@ Parameters:
   # and nodes.
   DiskSizeGb:
     Description: 'Size of the disk for each CockroachDB node.'
-    Default: 5
+    Default: 20
     Type: Number
     MinValue: 1
     MaxValue: 1024

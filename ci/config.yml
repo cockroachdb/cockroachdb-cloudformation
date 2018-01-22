@@ -17,12 +17,12 @@ global:
 tests:
   single-node-vpc-alpha:
     regions:
-    - us-east-1
+    - us-west-1
     parameter_input: new-vpc-inputs-single-node-alpha.json
     template_file: kubernetes-cluster-with-new-vpc.template
   multi-node-vpc:
     regions:
-    - us-east-1
+    - us-west-1
     parameter_input: new-vpc-inputs-multi-node-stable.json
     template_file: kubernetes-cluster-with-new-vpc.template
 
