@@ -412,6 +412,7 @@ Resources:
                 NodePortConfigUrl: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/scripts/cockroachdb-nodeport-config.yaml"
                 Region: !Ref AWS::Region
                 AvailabilityZone: !Ref AvailabilityZone
+                InstanceType: !Ref InstanceType
                 CockroachDockerVersionTag:
                     Fn::FindInMap:
                     - VersionTagMap

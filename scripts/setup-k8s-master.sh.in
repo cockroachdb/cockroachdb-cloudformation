@@ -30,6 +30,7 @@ test -n "{{DashboardUrl}}"
 test -n "{{StorageClassUrl}}"
 test -n "{{Region}}"
 test -n "{{AvailabilityZone}}"
+test -n "{{InstanceType}}"
 test -n "{{CockroachNodeCount}}"
 test -n "{{CockroachVolumeSize}}"
 test -n "{{CockroachDockerVersionTag}}"
@@ -115,11 +116,13 @@ chown -R ubuntu:ubuntu /home/ubuntu/.kube
 ####################
 
 LOCALITY="Region={{Region}},AvailabilityZone={{AvailabilityZone}}"
+ATTRS="InstanceType={{InstanceType}}"
 
 # update default config to use desired settings
 /tmp/update-crdb-statefulset.py \
     https://cockroach-cloudformation.s3.amazonaws.com/kubernetes/scripts/cockroachdb-statefulset.yaml \
-    --size {{CockroachVolumeSize}} --version-tag {{CockroachDockerVersionTag}} --locality=$LOCALITY > /tmp/cockroachdb-statefulset.yaml
+    --size {{CockroachVolumeSize}} --version-tag {{CockroachDockerVersionTag}} --locality=$LOCALITY \
+     --attrs=$ATTRS > /tmp/cockroachdb-statefulset.yaml
 
 kubectl apply -f /tmp/cockroachdb-statefulset.yaml
 kubectl scale statefulset cockroachdb --replicas={{CockroachNodeCount}}
