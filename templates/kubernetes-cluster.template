@@ -237,32 +237,60 @@ Mappings:
   RegionMap:
     us-west-1:
       '64': ami-965965f6
+      'lat': 37.44
+      'long': -122.14
     ap-south-1:
       '64': ami-27d59748
+      'lat': 19.08
+      'long': 72.88
     eu-west-2:
       '64': ami-22908d46
+      'lat': 39.96
+      'long': -83.00
     eu-west-1:
       '64': ami-a7df7ade
+      'lat': 53.35
+      'long': -6.26
     ap-northeast-2:
       '64': ami-4401a42a
+      'lat': 37.57
+      'long': 126.98
     ap-northeast-1:
       '64': ami-ad60c1cb
+      'lat': 35.41
+      'long': 139.42
     sa-east-1:
       '64': ami-db1860b7
+      'lat': -23.34
+      'long': -46.38
     ca-central-1:
       '64': ami-c7843ca3
+      'lat': 45.50
+      'long': -73.57
     ap-southeast-1:
       '64': ami-dce8a9bf
+      'lat': 1.37
+      'long': 103.80
     ap-southeast-2:
       '64': ami-408c6322
+      'lat': -33.86
+      'long': 151.20
     eu-central-1:
       '64': ami-3058e35f
+      'lat': 50.1167
+      'long': 8.6833
     us-east-1:
       '64': ami-9fa90ee5
+      'lat': 38.13
+      'long': -78.45
     us-east-2:
       '64': ami-4686aa23
+      'lat': 39.96
+      'long': -83.00
     us-west-2:
       '64': ami-f431fe8c
+      'lat': 46.15
+      'long': -123.88
 
   VersionTagMap:
     v1.1.4:
