@@ -118,7 +118,7 @@ chown -R ubuntu:ubuntu /home/ubuntu/.kube
 ####################
 
 LOCALITY="region={{Region}},availability-zone={{AvailabilityZone}}"
-ATTRS="InstanceType={{InstanceType}}"
+ATTRS="instance-type={{InstanceType}}"
 
 # update default config to use desired settings
 /tmp/update-crdb-statefulset.py \
