@@ -133,7 +133,7 @@ kubectl create -f {{NodePortConfigUrl}}
 
 #create job to associate {{Region}} with {{RegionLatitude}}, {{RegionLongitude}}"
 
-if [[ {{CockroachDockerVersionTag}} =~ :v2.0 ]]
+if [[ {{CockroachDockerVersionTag}} =~ :v2 ]]
 then
     kubectl run set-locality-coordinates --image=cockroachdb/cockroach --restart=OnFailure -- \
     sql --insecure --host=cockroachdb-0.cockroachdb -e  \
