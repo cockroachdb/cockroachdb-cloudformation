@@ -245,8 +245,8 @@ Mappings:
       'long': 72.88
     eu-west-2:
       '64': ami-22908d46
-      'lat': 39.96
-      'long': -83.00
+      'lat': 51.51
+      'long': -0.13
     eu-west-1:
       '64': ami-a7df7ade
       'lat': 53.35
@@ -440,6 +440,16 @@ Resources:
                 NodePortConfigUrl: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/scripts/cockroachdb-nodeport-config.yaml"
                 Region: !Ref AWS::Region
                 AvailabilityZone: !Ref AvailabilityZone
+                RegionLatitude:
+                    Fn::FindInMap:
+                    - RegionMap
+                    - !Ref AWS::Region
+                    - 'lat'
+                RegionLongitude:
+                    Fn::FindInMap:
+                    - RegionMap
+                    - !Ref AWS::Region
+                    - 'long'
                 InstanceType: !Ref InstanceType
                 CockroachDockerVersionTag:
                     Fn::FindInMap:
