@@ -9,7 +9,7 @@
     },
     {
         "ParameterKey": "DiskSizeGb",
-        "ParameterValue": "1"
+        "ParameterValue": "5"
     },
     {
         "ParameterKey": "K8sNodeCapacity",

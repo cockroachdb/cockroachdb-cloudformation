@@ -100,10 +100,10 @@ Parameters:
   # Specifies the size of the root disk for all EC2 instances, including master
   # and nodes.
   DiskSizeGb:
-    Description: 'Size of the disk for each CockroachDB node.'
+    Description: 'Provisioned IOPS SSD volume size for each CockroachDB node.'
     Default: 20
     Type: Number
-    MinValue: 1
+    MinValue: 4
     MaxValue: 1024
 
   AdminIngressLocation:
