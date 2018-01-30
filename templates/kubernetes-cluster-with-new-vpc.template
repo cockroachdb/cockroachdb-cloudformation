@@ -68,11 +68,10 @@ Parameters:
   Version:
     Description: Version to use for the cluster.
     Type: String
-    Default: v1.1.4
+    Default: Latest Stable
     AllowedValues:
-    - v1.1.4
-    - v1.0.6
-    - v2.0-alpha.20180122
+    - 'Latest Stable'
+    - 'Latest Pre-release'
 
   KeyName:
     Description: Existing EC2 KeyPair for SSH access.

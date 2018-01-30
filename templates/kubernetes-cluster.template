@@ -117,11 +117,10 @@ Parameters:
   Version:
     Description: Version to use for the cluster.
     Type: String
-    Default: v1.1.4
+    Default: 'Latest Stable'
     AllowedValues:
-    - v1.1.4
-    - v1.0.6
-    - v2.0-alpha.20180122
+    - 'Latest Stable'
+    - 'Latest Pre-release'
 
 
   # https://aws.amazon.com/ec2/instance-types/
@@ -293,12 +292,10 @@ Mappings:
       'long': -123.88
 
   VersionTagMap:
-    v1.1.4:
-      'image': 'cockroachdb/cockroach:v1.1.4'
-    v1.0.6:
-      'image': 'cockroachdb/cockroach:v1.0.6'
-    v2.0-alpha.20180122:
-      'image': 'cockroachdb/cockroach-unstable:v2.0-alpha.20180122'
+    'Latest Stable':
+      'image': 'cockroachdb/cockroach:latest'
+    'Latest Pre-release':
+      'image': 'cockroachdb/cockroach-unstable:latest'
 
 
 # Helper Conditions which help find the right values for resources

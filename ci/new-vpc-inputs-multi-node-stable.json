@@ -17,7 +17,7 @@
     },
     {
         "ParameterKey": "Version",
-        "ParameterValue": "v1.1.4"
+        "ParameterValue": "Latest Stable"
     },
     {
         "ParameterKey": "QSS3BucketName",
