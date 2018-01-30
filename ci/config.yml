@@ -18,7 +18,7 @@ tests:
   single-node-vpc-alpha:
     regions:
     - us-west-1
-    parameter_input: new-vpc-inputs-single-node-alpha.json
+    parameter_input: new-vpc-inputs-single-node-pre-release.json
     template_file: kubernetes-cluster-with-new-vpc.template
   multi-node-vpc:
     regions:

@@ -66,12 +66,12 @@ Metadata:
 # The Parameters allow the user to pass custom settings to the stack before creation
 Parameters:
   Version:
-    Description: Version to use for the cluster.
+    Description: Choose between the latest stable or pre-release CockroachDB binary.
     Type: String
-    Default: Latest Stable
+    Default: Stable
     AllowedValues:
-    - 'Latest Stable'
-    - 'Latest Pre-release'
+    - Stable
+    - Pre-release
 
   KeyName:
     Description: Existing EC2 KeyPair for SSH access.

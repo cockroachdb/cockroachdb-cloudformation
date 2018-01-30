@@ -115,12 +115,12 @@ Parameters:
     Type: String
 
   Version:
-    Description: Version to use for the cluster.
+    Description: Choose between the latest stable or pre-release CockroachDB binary.
     Type: String
-    Default: 'Latest Stable'
+    Default: Stable
     AllowedValues:
-    - 'Latest Stable'
-    - 'Latest Pre-release'
+    - Stable
+    - Pre-release
 
 
   # https://aws.amazon.com/ec2/instance-types/
@@ -292,9 +292,9 @@ Mappings:
       'long': -123.88
 
   VersionTagMap:
-    'Latest Stable':
+    'Stable':
       'image': 'cockroachdb/cockroach:latest'
-    'Latest Pre-release':
+    'Pre-release':
       'image': 'cockroachdb/cockroach-unstable:latest'
 
 

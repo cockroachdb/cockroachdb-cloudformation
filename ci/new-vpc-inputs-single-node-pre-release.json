@@ -1,7 +1,7 @@
 [
     {
         "ParameterKey": "AdminIngressLocation",
-        "ParameterValue": "1.2.3.4/32"
+        "ParameterValue": "0.0.0.0/0"
     },
     {
         "ParameterKey": "KeyName",
@@ -17,7 +17,7 @@
     },
     {
         "ParameterKey": "Version",
-        "ParameterValue": "Latest Pre-release"
+        "ParameterValue": "Pre-release"
     },
     {
         "ParameterKey": "QSS3BucketName",
