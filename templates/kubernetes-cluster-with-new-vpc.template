@@ -103,7 +103,7 @@ Parameters:
     Default: 20
     Type: Number
     MinValue: 4
-    MaxValue: 1024
+    MaxValue: 4096
 
   AdminIngressLocation:
     Description: IP address range (CIDR notation) to allow access to the CockroachDB Web UI, PostgreSQL ports,

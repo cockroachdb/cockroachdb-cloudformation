@@ -149,7 +149,7 @@ Parameters:
     Default: 20
     Type: Number
     MinValue: 4
-    MaxValue: 1024
+    MaxValue: 4096
 
   # Required. This is an availability zone from your region
   # http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html
