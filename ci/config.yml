@@ -9,17 +9,18 @@ global:
     - ap-southeast-2
     - eu-central-1
     - eu-west-1
+    - eu-west-2
     - us-east-1
     - us-east-2
     - us-west-1
     - us-west-2
 
 tests:
-  single-node-vpc-alpha:
-    regions:
-    - us-west-1
-    parameter_input: new-vpc-inputs-single-node-pre-release.json
-    template_file: kubernetes-cluster-with-new-vpc.template
+#  single-node-vpc-alpha:
+#    regions:
+#    - us-west-1
+#    parameter_input: new-vpc-inputs-single-node-pre-release.json
+#    template_file: kubernetes-cluster-with-new-vpc.template
   multi-node-vpc:
     regions:
     - us-west-1

@@ -37,6 +37,7 @@ test -n "{{CockroachDockerVersionTag}}"
 test -n "{{NodePortConfigUrl}}"
 test -n "{{RegionLatitude}}"
 test -n "{{RegionLongitude}}"
+test -n "{{LoadgenName}}"
 
 # kubeadm wants lowercase for DNS (as it probably should)
 LB_DNS=$(echo "{{LoadBalancerDns}}" | tr 'A-Z' 'a-z')
@@ -128,8 +129,11 @@ ATTRS="instance-type={{InstanceType}}"
 
 kubectl apply -f /tmp/cockroachdb-statefulset.yaml
 kubectl scale statefulset cockroachdb --replicas={{CockroachNodeCount}}
-kubectl create -f https://raw.githubusercontent.com/cockroachdb/cockroach/master/cloud/kubernetes/cluster-init.yaml
-kubectl create -f {{NodePortConfigUrl}}
+kubectl apply -f https://raw.githubusercontent.com/cockroachdb/cockroach/master/cloud/kubernetes/cluster-init.yaml
+kubectl apply -f {{NodePortConfigUrl}}
+
+
+
 
 #create job to associate {{Region}} with {{RegionLatitude}}, {{RegionLongitude}}"
 
@@ -140,5 +144,19 @@ then
     "INSERT INTO system.locations (\"localityKey\", \"localityValue\", latitude, longitude) VALUES ('region', '{{Region}}', {{RegionLatitude}}, {{RegionLongitude}})"
 fi
 
+if [[ {{LoadgenName}}  = YCSB ]]
+then
+    kubectl run ycsb --image=natestewart/cockroachdb-ycsb-loadgen -- \
+    -drop=false -tolerate-errors "postgresql://root@${LB_DNS}:26257?application_name=cockroach&sslmode=disable"
+fi
 
+if [[ {{LoadgenName}} = TPCC ]]
+then
 
+    kubectl run create-tpcc-warehouse --image=cockroachdb/cockroach --restart=OnFailure -- \
+    sql --insecure --host=cockroachdb-0.cockroachdb -e  \
+    "CREATE DATABASE warehouse;"
+
+    kubectl run tpcc --image=natestewart/cockroachdb-tpcc-loadgen -- \
+    -drop -load -tolerate-errors "postgresql://root@${LB_DNS}:26257/warehouse?application_name=cockroach&sslmode=disable"
+fi
