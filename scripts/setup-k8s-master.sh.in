@@ -153,10 +153,7 @@ fi
 if [[ {{LoadgenName}} = TPCC ]]
 then
 
-    kubectl run tpcc-load --image=natestewart/cockroachdb-tpcc-loadgen --restart=OnFailure -- \
-    -drop -load "postgresql://root@${LB_DNS}:26257/tpcc?application_name=cockroach&sslmode=disable"
-
-    kubectl run tpcc --image=natestewart/cockroachdb-tpcc-loadgen -- \
-    -tolerate-errors "postgresql://root@${LB_DNS}:26257/tpcc?application_name=cockroach&sslmode=disable"
+    kubectl run tpcc-load --image=natestewart/cockroachdb-tpcc-loadgen -- \
+    -drop -load -tolerate-errors "postgresql://root@${LB_DNS}:26257/tpcc?application_name=cockroach&sslmode=disable"
 
 fi
