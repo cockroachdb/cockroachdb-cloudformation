@@ -8,18 +8,18 @@ global:
 
 tests:
 
-#  multi-node-vpc:
-#    parameter_input: new-vpc-inputs-multi-node-stable.json
-#    template_file: kubernetes-cluster-with-new-vpc.template
+  multi-node-vpc:
+    parameter_input: new-vpc-inputs-multi-node-stable.json
+    template_file: kubernetes-cluster-with-new-vpc.template
 #  single-node-vpc-alpha:
 #    parameter_input: new-vpc-inputs-single-node-pre-release.json
 #    template_file: kubernetes-cluster-with-new-vpc.template
-  single-node-vpc-tpc-c:
-    parameter_input: new-vpc-inputs-single-node-tpc-c.json
-    template_file: kubernetes-cluster-with-new-vpc.template
-  single-node-vpc-kv:
-    parameter_input: new-vpc-inputs-single-node-kv.json
-    template_file: kubernetes-cluster-with-new-vpc.template
+#  single-node-vpc-tpc-c:
+#    parameter_input: new-vpc-inputs-single-node-tpc-c.json
+#    template_file: kubernetes-cluster-with-new-vpc.template
+#  single-node-vpc-kv:
+#    parameter_input: new-vpc-inputs-single-node-kv.json
+#    template_file: kubernetes-cluster-with-new-vpc.template
   single-node-vpc-ycsb:
     parameter_input: new-vpc-inputs-single-node-ycsb.json
     template_file: kubernetes-cluster-with-new-vpc.template

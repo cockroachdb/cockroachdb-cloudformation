@@ -121,14 +121,13 @@ chown -R ubuntu:ubuntu /home/ubuntu/.kube
 LOCALITY="region={{Region}},availability-zone={{AvailabilityZone}}"
 ATTRS="instance-type={{InstanceType}}"
 
-# update default config to use desired settings
+# update default cockroachdb statefulset config to use desired settings
 /tmp/update-crdb-statefulset.py \
     https://cockroach-cloudformation.s3.amazonaws.com/kubernetes/scripts/cockroachdb-statefulset.yaml \
     --size {{CockroachVolumeSize}} --version-tag {{CockroachDockerVersionTag}} --locality $LOCALITY \
-    --attrs=$ATTRS > /tmp/cockroachdb-statefulset.yaml
+    --attrs=$ATTRS --replicas={{CockroachNodeCount}} > /tmp/cockroachdb-statefulset.yaml
 
 kubectl apply -f /tmp/cockroachdb-statefulset.yaml
-kubectl scale statefulset cockroachdb --replicas={{CockroachNodeCount}}
 kubectl apply -f https://raw.githubusercontent.com/cockroachdb/cockroach/master/cloud/kubernetes/cluster-init.yaml
 kubectl apply -f {{NodePortConfigUrl}}
 

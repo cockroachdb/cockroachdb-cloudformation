@@ -7,6 +7,7 @@ parser.add_argument('--size',  dest="size_in_gb", type=int, help='Desired volume
 parser.add_argument('--version-tag', dest="version_tag", help='CockroachDB Docker tag to use')
 parser.add_argument('--locality', dest="locality", required=True, help='Locality argument to use')
 parser.add_argument('--attrs', dest="attrs", required=True, help='Attribute argument to use')
+parser.add_argument('--replicas', dest="replicas", type=int, help='Number of nodes to create')
 
 args = parser.parse_args()
 
@@ -19,6 +20,8 @@ for config in configs:
         if args.size_in_gb:
             config['spec']['volumeClaimTemplates'][0]['spec']['resources']['requests']['storage'] = str(args.size_in_gb) + 'Gi'
 
+        if args.replicas:
+            config['spec']['replicas'] = args.replicas
 
         for container in config['spec']['template']['spec']['containers']:
             if container['name'] == 'cockroachdb':
