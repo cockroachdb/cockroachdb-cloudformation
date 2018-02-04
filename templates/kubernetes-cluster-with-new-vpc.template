@@ -145,12 +145,13 @@ Parameters:
 
   Workload:
     Default: 'None'
-    Description: Options for generating traffic for the cluster. The \"Internet-style\" workload corresponds to the YCSB benchmark while \"Transactional\" is for TPC-C.
+    Description: Options for generating traffic for the cluster.
     Type: String
     AllowedValues:
     - None
-    - Internet-style
-    - Transactional
+    - Hot Key (YCSB)
+    - Transactional (TPC-C)
+    - Evenly Distributed (KV)
 
 
   QSS3BucketName:

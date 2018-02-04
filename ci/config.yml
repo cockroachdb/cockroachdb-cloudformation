@@ -1,29 +1,26 @@
 global:
   owner: nate@cockroachlabs.com
   qsname: cockroachdb-cloudformation
+  s3bucket: crdb-cloudformation-dev
   reporting: true
   regions:
-    - ap-northeast-1
-    - ap-northeast-2
-    - ap-southeast-1
-    - ap-southeast-2
-    - eu-central-1
     - eu-west-1
-    - eu-west-2
-    - us-east-1
-    - us-east-2
-    - us-west-1
-    - us-west-2
 
 tests:
+
+#  multi-node-vpc:
+#    parameter_input: new-vpc-inputs-multi-node-stable.json
+#    template_file: kubernetes-cluster-with-new-vpc.template
 #  single-node-vpc-alpha:
-#    regions:
-#    - us-west-1
 #    parameter_input: new-vpc-inputs-single-node-pre-release.json
 #    template_file: kubernetes-cluster-with-new-vpc.template
-  multi-node-vpc:
-    regions:
-    - us-west-1
-    parameter_input: new-vpc-inputs-multi-node-stable.json
+  single-node-vpc-tpc-c:
+    parameter_input: new-vpc-inputs-single-node-tpc-c.json
+    template_file: kubernetes-cluster-with-new-vpc.template
+  single-node-vpc-kv:
+    parameter_input: new-vpc-inputs-single-node-kv.json
+    template_file: kubernetes-cluster-with-new-vpc.template
+  single-node-vpc-ycsb:
+    parameter_input: new-vpc-inputs-single-node-ycsb.json
     template_file: kubernetes-cluster-with-new-vpc.template
 

@@ -5,7 +5,7 @@
     },
     {
         "ParameterKey": "KeyName",
-        "ParameterValue": "nate-cf-test"
+        "ParameterValue": "aws-quickstart-test"
     },
     {
         "ParameterKey": "DiskSizeGb",
@@ -13,11 +13,7 @@
     },
     {
         "ParameterKey": "K8sNodeCapacity",
-        "ParameterValue": "3"
-    },
-    {
-        "ParameterKey": "Workload",
-        "ParameterValue": "Transactional"
+        "ParameterValue": "1"
     },
     {
         "ParameterKey": "Version",
@@ -25,7 +21,7 @@
     },
     {
         "ParameterKey": "QSS3BucketName",
-        "ParameterValue": "$[taskcat_autobucket]"
+        "ParameterValue": "crdb-cloudformation-dev"
     },
     {
         "ParameterKey": "QSS3KeyPrefix",

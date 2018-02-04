@@ -37,7 +37,7 @@ test -n "{{CockroachDockerVersionTag}}"
 test -n "{{NodePortConfigUrl}}"
 test -n "{{RegionLatitude}}"
 test -n "{{RegionLongitude}}"
-test -n "{{LoadgenName}}"
+test -n "{{Workload}}"
 
 # kubeadm wants lowercase for DNS (as it probably should)
 LB_DNS=$(echo "{{LoadBalancerDns}}" | tr 'A-Z' 'a-z')
@@ -144,13 +144,19 @@ then
     "INSERT INTO system.locations (\"localityKey\", \"localityValue\", latitude, longitude) VALUES ('region', '{{Region}}', {{RegionLatitude}}, {{RegionLongitude}})"
 fi
 
-if [[ {{LoadgenName}}  = YCSB ]]
+if [[ "{{Workload}}"  =~ YCSB ]]
 then
     kubectl run ycsb --image=natestewart/cockroachdb-ycsb-loadgen -- \
     -drop=false -tolerate-errors "postgresql://root@${LB_DNS}:26257?application_name=cockroach&sslmode=disable"
 fi
 
-if [[ {{LoadgenName}} = TPCC ]]
+if [[ "{{Workload}}"  =~ KV ]]
+then
+    kubectl run kv --image=cockroachdb/loadgen-kv -- \
+    /kv -drop=false -tolerate-errors "postgresql://root@${LB_DNS}:26257?application_name=cockroach&sslmode=disable"
+fi
+
+if [[ "{{Workload}}" =~ TPCC ]]
 then
 
     kubectl run tpcc-load --image=natestewart/cockroachdb-tpcc-loadgen -- \
