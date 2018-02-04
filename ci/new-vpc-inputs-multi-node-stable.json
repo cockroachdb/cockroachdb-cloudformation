@@ -21,7 +21,7 @@
     },
     {
         "ParameterKey": "QSS3BucketName",
-        "ParameterValue": "crdb-cloudformation-dev"
+        "ParameterValue": "$[taskcat_autobucket]"
     },
     {
         "ParameterKey": "QSS3KeyPrefix",

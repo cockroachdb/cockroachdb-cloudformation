@@ -214,8 +214,6 @@ Parameters:
     Type: String
     AllowedValues:
     - None
-    - Hot Key (YCSB)
-    - Transactional (TPC-C)
     - Evenly Distributed (KV)
 
   # S3 Bucket configuration: allows users to use their own downstream snapshots

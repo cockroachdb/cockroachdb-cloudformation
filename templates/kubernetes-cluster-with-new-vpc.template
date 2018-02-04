@@ -149,8 +149,6 @@ Parameters:
     Type: String
     AllowedValues:
     - None
-    - Hot Key (YCSB)
-    - Transactional (TPC-C)
     - Evenly Distributed (KV)
 
 

@@ -143,22 +143,8 @@ then
     "INSERT INTO system.locations (\"localityKey\", \"localityValue\", latitude, longitude) VALUES ('region', '{{Region}}', {{RegionLatitude}}, {{RegionLongitude}})"
 fi
 
-if [[ "{{Workload}}"  =~ YCSB ]]
-then
-    kubectl run ycsb --image=natestewart/cockroachdb-ycsb-loadgen -- \
-    -drop=false -tolerate-errors "postgresql://root@${LB_DNS}:26257?application_name=cockroach&sslmode=disable"
-fi
-
 if [[ "{{Workload}}"  =~ KV ]]
 then
     kubectl run kv --image=cockroachdb/loadgen-kv -- \
     /kv -drop=false -tolerate-errors "postgresql://root@${LB_DNS}:26257?application_name=cockroach&sslmode=disable"
-fi
-
-if [[ "{{Workload}}" =~ TPCC ]]
-then
-
-    kubectl run tpcc-load --image=natestewart/cockroachdb-tpcc-loadgen -- \
-    -drop -load -tolerate-errors "postgresql://root@${LB_DNS}:26257/tpcc?application_name=cockroach&sslmode=disable"
-
 fi
