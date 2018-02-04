@@ -106,7 +106,7 @@ spec:
             path: /health
             port: 8080
           initialDelaySeconds: 10
-          periodSeconds: 1
+          periodSeconds: 5
         ports:
         - containerPort: 26257
           name: grpc
