@@ -153,10 +153,10 @@ fi
 if [[ {{LoadgenName}} = TPCC ]]
 then
 
-    kubectl run create-tpcc-warehouse --image=cockroachdb/cockroach --restart=OnFailure -- \
-    sql --insecure --host=cockroachdb-0.cockroachdb -e  \
-    "CREATE DATABASE warehouse;"
+    kubectl run tpcc-load --image=natestewart/cockroachdb-tpcc-loadgen --restart=OnFailure -- \
+    -drop -load "postgresql://root@${LB_DNS}:26257/tpcc?application_name=cockroach&sslmode=disable"
 
     kubectl run tpcc --image=natestewart/cockroachdb-tpcc-loadgen -- \
-    -drop -load -tolerate-errors "postgresql://root@${LB_DNS}:26257/warehouse?application_name=cockroach&sslmode=disable"
+    -tolerate-errors "postgresql://root@${LB_DNS}:26257/tpcc?application_name=cockroach&sslmode=disable"
+
 fi
