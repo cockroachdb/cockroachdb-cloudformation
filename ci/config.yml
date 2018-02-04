@@ -3,7 +3,7 @@ global:
   qsname: cockroachdb-cloudformation
   reporting: true
   regions:
-    - eu-west-1
+    - us-west-1
 
 tests:
 
