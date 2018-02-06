@@ -146,5 +146,5 @@ fi
 if [[ "{{Workload}}"  =~ KV ]]
 then
     kubectl run kv --image=cockroachdb/loadgen-kv -- \
-    /kv -drop=false -concurrency 10 -read-percent 95 -tolerate-errors "postgresql://root@${LB_DNS}:26257?application_name=cockroach&sslmode=disable"
+    /kv -drop=false -concurrency 10 -read-percent 95 -tolerate-errors "postgresql://root@cockroachdb-public:26257?application_name=cockroach&sslmode=disable"
 fi
