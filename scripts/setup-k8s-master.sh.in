@@ -37,6 +37,7 @@ test -n "{{CockroachDockerVersionTag}}"
 test -n "{{NodePortConfigUrl}}"
 test -n "{{RegionLatitude}}"
 test -n "{{RegionLongitude}}"
+test -n "{{Workload}}"
 
 # kubeadm wants lowercase for DNS (as it probably should)
 LB_DNS=$(echo "{{LoadBalancerDns}}" | tr 'A-Z' 'a-z')
@@ -120,16 +121,18 @@ chown -R ubuntu:ubuntu /home/ubuntu/.kube
 LOCALITY="region={{Region}},availability-zone={{AvailabilityZone}}"
 ATTRS="instance-type={{InstanceType}}"
 
-# update default config to use desired settings
+# update default cockroachdb statefulset config to use desired settings
 /tmp/update-crdb-statefulset.py \
     https://cockroach-cloudformation.s3.amazonaws.com/kubernetes/scripts/cockroachdb-statefulset.yaml \
     --size {{CockroachVolumeSize}} --version-tag {{CockroachDockerVersionTag}} --locality $LOCALITY \
-    --attrs=$ATTRS > /tmp/cockroachdb-statefulset.yaml
+    --attrs=$ATTRS --replicas={{CockroachNodeCount}} > /tmp/cockroachdb-statefulset.yaml
 
 kubectl apply -f /tmp/cockroachdb-statefulset.yaml
-kubectl scale statefulset cockroachdb --replicas={{CockroachNodeCount}}
-kubectl create -f https://raw.githubusercontent.com/cockroachdb/cockroach/master/cloud/kubernetes/cluster-init.yaml
-kubectl create -f {{NodePortConfigUrl}}
+kubectl apply -f https://raw.githubusercontent.com/cockroachdb/cockroach/master/cloud/kubernetes/cluster-init.yaml
+kubectl apply -f {{NodePortConfigUrl}}
+
+
+
 
 #create job to associate {{Region}} with {{RegionLatitude}}, {{RegionLongitude}}"
 
@@ -140,5 +143,8 @@ then
     "INSERT INTO system.locations (\"localityKey\", \"localityValue\", latitude, longitude) VALUES ('region', '{{Region}}', {{RegionLatitude}}, {{RegionLongitude}})"
 fi
 
-
-
+if [[ "{{Workload}}"  =~ KV ]]
+then
+    kubectl run kv --image=cockroachdb/loadgen-kv -- \
+    /kv -drop=false -concurrency 10 -read-percent 95 -tolerate-errors "postgresql://root@cockroachdb-public:26257?application_name=cockroach&sslmode=disable"
+fi

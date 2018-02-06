@@ -40,6 +40,11 @@ Metadata:
       - InstanceType
       - DiskSizeGb
     - Label:
+        default: Load Generators
+      Parameters:
+      - Workload
+
+    - Label:
         default: Advanced
       Parameters:
       - QSS3BucketName
@@ -58,6 +63,8 @@ Metadata:
         default: Node Disk Size (GiB)
       K8sNodeCapacity:
         default: Cluster Size
+      Workload:
+        default: Workload
       QSS3BucketName:
         default: AWS Quick Start S3 Bucket
       QSS3KeyPrefix:
@@ -135,6 +142,15 @@ Parameters:
     - 13
     - 14
     - 15
+
+  Workload:
+    Default: 'None'
+    Description: Options for generating traffic for the cluster.
+    Type: String
+    AllowedValues:
+    - None
+    - Evenly Distributed (KV)
+
 
   QSS3BucketName:
     AllowedPattern: "^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$"
@@ -416,6 +432,7 @@ Resources:
         ApiLbLocation: !Ref AdminIngressLocation
         KeyName: !Ref KeyName
         K8sNodeCapacity: !Ref K8sNodeCapacity
+        Workload: !Ref Workload
         QSS3BucketName: !Ref QSS3BucketName
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
         ClusterAssociation: !Ref AWS::StackName

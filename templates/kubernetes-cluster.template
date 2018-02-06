@@ -42,6 +42,10 @@ Metadata:
         - DiskSizeGb
         - K8sNodeCapacity
     - Label:
+        default: Load Generators
+      Parameters:
+        - Workload
+    - Label:
         default: Access Configuration
       Parameters:
       - SSHLocation
@@ -75,6 +79,8 @@ Metadata:
         default: Disk Size (GiB)
       K8sNodeCapacity:
         default: Cluster Size
+      Workload:
+        default: Load Generator
       QSS3BucketName:
         default: S3 Bucket
       QSS3KeyPrefix:
@@ -202,6 +208,13 @@ Parameters:
     - 14
     - 15
 
+  Workload:
+    Default: 'None'
+    Description: Options for generating traffic for the cluster.
+    Type: String
+    AllowedValues:
+    - None
+    - Evenly Distributed (KV)
 
   # S3 Bucket configuration: allows users to use their own downstream snapshots
   # of the quickstart-aws-vpc and quickstart-linux-bastion templates
@@ -231,6 +244,7 @@ Parameters:
 
 # http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/mappings-section-structure.html
 Mappings:
+
 
   # http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/using-regions-availability-zones.html
   RegionMap:
@@ -455,6 +469,8 @@ Resources:
                     - 'image'
                 CockroachNodeCount: !Ref K8sNodeCapacity
                 CockroachVolumeSize: !Ref DiskSizeGb
+                Workload: !Ref Workload
+
           services:
             sysvinit:
               cfn-resource-bridge:
