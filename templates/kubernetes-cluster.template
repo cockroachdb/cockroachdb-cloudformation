@@ -512,7 +512,7 @@ Resources:
       # The IAM role allows us to create further AWS resources (like an EBS drive) from the cluster
       # This is needed for the Kubernetes-AWS cloud-provider integration
       IamInstanceProfile: !Ref MasterInstanceProfile
-      InstanceType: !Ref InstanceType
+      InstanceType: t2.medium
       # Adds our SSH key to the instance
       KeyName: !Ref KeyName
       NetworkInterfaces:
