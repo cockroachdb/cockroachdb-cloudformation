@@ -215,6 +215,7 @@ Parameters:
     AllowedValues:
     - None
     - Evenly Distributed (KV)
+    - Internet-style (YCSB)
 
   # S3 Bucket configuration: allows users to use their own downstream snapshots
   # of the quickstart-aws-vpc and quickstart-linux-bastion templates
