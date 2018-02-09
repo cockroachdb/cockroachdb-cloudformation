@@ -16,6 +16,10 @@
         "ParameterValue": "3"
     },
     {
+        "ParameterKey": "InstanceType",
+        "ParameterValue": "t2.medium"
+    },
+    {
         "ParameterKey": "Version",
         "ParameterValue": "Stable"
     },

@@ -16,6 +16,10 @@
         "ParameterValue": "1"
     },
     {
+        "ParameterKey": "InstanceType",
+        "ParameterValue": "m4.large"
+    },
+    {
         "ParameterKey": "Version",
         "ParameterValue": "Pre-release"
     },
