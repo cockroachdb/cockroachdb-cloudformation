@@ -13,7 +13,7 @@ function error_exit() {
 export KUBECONFIG=/home/ubuntu/.kube/config
 
 #poll until all pods are up
-running_count=`kubectl get pods | grep Running | wc -l`
+running_count=`kubectl get pods | grep "cockroachdb.*Running" | wc -l`
 
 retry_count=0 #wait for 10 mins
 

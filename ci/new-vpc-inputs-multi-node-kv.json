@@ -1,0 +1,38 @@
+[
+    {
+        "ParameterKey": "AdminIngressLocation",
+        "ParameterValue": "0.0.0.0/0"
+    },
+    {
+        "ParameterKey": "KeyName",
+        "ParameterValue": "aws-quickstart-test"
+    },
+    {
+        "ParameterKey": "DiskSizeGb",
+        "ParameterValue": "5"
+    },
+    {
+        "ParameterKey": "K8sNodeCapacity",
+        "ParameterValue": "3"
+    },
+    {
+        "ParameterKey": "InstanceType",
+        "ParameterValue": "t2.medium"
+    },
+    {
+        "ParameterKey": "Workload",
+        "ParameterValue": "Evenly Distributed (KV)"
+    },
+    {
+        "ParameterKey": "Version",
+        "ParameterValue": "Stable"
+    },
+    {
+        "ParameterKey": "QSS3BucketName",
+        "ParameterValue": "$[taskcat_autobucket]"
+    },
+    {
+        "ParameterKey": "QSS3KeyPrefix",
+        "ParameterValue": "cockroachdb-cloudformation"
+    }
+]

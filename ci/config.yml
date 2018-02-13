@@ -16,5 +16,10 @@ tests:
   single-node-vpc-kv:
     parameter_input: new-vpc-inputs-single-node-kv.json
     template_file: kubernetes-cluster-with-new-vpc.template
+  multi-node-vpc-kv:
+    regions:
+      - eu-west-1
+    parameter_input: new-vpc-inputs-multi-node-kv.json
+    template_file: kubernetes-cluster-with-new-vpc.template
 
 
