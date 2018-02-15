@@ -124,7 +124,7 @@ Parameters:
     ConstraintDescription: must be a valid IP CIDR range of the form x.x.x.x/x.
 
   K8sNodeCapacity:
-    Default: '3'
+    Default: '1'
     Description: Initial number of CockroachDB nodes.
     Type: Number
     AllowedValues:
