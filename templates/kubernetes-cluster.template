@@ -307,7 +307,7 @@ Mappings:
 
   VersionTagMap:
     'Stable':
-      'image': 'cockroachdb/cockroach:latest'
+      'image': 'cockroachdb/cockroach:v1.1.5'
     'Pre-release':
       'image': 'cockroachdb/cockroach-unstable:latest'
 
