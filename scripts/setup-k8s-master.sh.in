@@ -143,8 +143,18 @@ then
     "INSERT INTO system.locations (\"localityKey\", \"localityValue\", latitude, longitude) VALUES ('region', '{{Region}}', {{RegionLatitude}}, {{RegionLongitude}})"
 fi
 
+# make sure there isn't a single range with one lease holder doing all the work.
+NUMSPLITS=$((({{CockroachNodeCount}} - 1) * 5))
+
+# scale concurrency with node count
+CONCURRENCY=$(({{CockroachNodeCount}} * 10))
+
 if [[ "{{Workload}}"  =~ KV ]]
 then
     kubectl run kv --image=cockroachdb/loadgen-kv -- \
-    /kv -drop=false -concurrency 10 -read-percent 95 -tolerate-errors "postgresql://root@cockroachdb-public:26257?application_name=cockroach&sslmode=disable"
+    /kv -drop=false -concurrency $CONCURRENCY -read-percent 95 -splits $NUMSPLITS -tolerate-errors "postgresql://root@cockroachdb-public:26257?application_name=cockroach&sslmode=disable"
+elif [[ "{{Workload}}"  =~ YCSB ]]
+then
+    kubectl run kv --image=cockroachdb/loadgen-ycsb -- \
+    -drop=false -concurrency $CONCURRENCY -splits $NUMSPLITS -tolerate-errors "postgresql://root@cockroachdb-public:26257?application_name=cockroach&sslmode=disable"
 fi

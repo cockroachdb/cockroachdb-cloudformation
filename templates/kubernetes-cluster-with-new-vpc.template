@@ -150,6 +150,7 @@ Parameters:
     AllowedValues:
     - None
     - Evenly Distributed (KV)
+    - Internet-style (YCSB)
 
 
   QSS3BucketName:
