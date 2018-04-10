@@ -136,12 +136,11 @@ kubectl apply -f {{NodePortConfigUrl}}
 
 #create job to associate {{Region}} with {{RegionLatitude}}, {{RegionLongitude}}"
 
-if [[ {{CockroachDockerVersionTag}} =~ unstable ]]
-then
-    kubectl run set-locality-coordinates --image=cockroachdb/cockroach --restart=OnFailure -- \
-    sql --insecure --host=cockroachdb-0.cockroachdb -e  \
-    "INSERT INTO system.locations (\"localityKey\", \"localityValue\", latitude, longitude) VALUES ('region', '{{Region}}', {{RegionLatitude}}, {{RegionLongitude}})"
-fi
+
+kubectl run set-locality-coordinates --image=cockroachdb/cockroach --restart=OnFailure -- \
+sql --insecure --host=cockroachdb-0.cockroachdb -e  \
+"INSERT INTO system.locations (\"localityKey\", \"localityValue\", latitude, longitude) VALUES ('region', '{{Region}}', {{RegionLatitude}}, {{RegionLongitude}})"
+
 
 # make sure there isn't a single range with one lease holder doing all the work.
 NUMSPLITS=$((({{CockroachNodeCount}} - 1) * 5))
