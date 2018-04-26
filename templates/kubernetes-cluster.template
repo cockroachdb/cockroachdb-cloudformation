@@ -450,6 +450,7 @@ Resources:
                 DashboardUrl: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/scripts/dashboard.yaml"
                 StorageClassUrl: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/scripts/default.storageclass.yaml"
                 NodePortConfigUrl: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/scripts/cockroachdb-nodeport-config.yaml"
+                StatefulSetConfigUrl: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/scripts/cockroachdb-statefulset.yaml"
                 Region: !Ref AWS::Region
                 AvailabilityZone: !Ref AvailabilityZone
                 RegionLatitude:

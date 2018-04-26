@@ -35,6 +35,7 @@ test -n "{{CockroachNodeCount}}"
 test -n "{{CockroachVolumeSize}}"
 test -n "{{CockroachDockerVersionTag}}"
 test -n "{{NodePortConfigUrl}}"
+test -n "{{StatefulSetConfigUrl}}"
 test -n "{{RegionLatitude}}"
 test -n "{{RegionLongitude}}"
 test -n "{{Workload}}"
@@ -123,12 +124,12 @@ ATTRS="instance-type={{InstanceType}}"
 
 # update default cockroachdb statefulset config to use desired settings
 /tmp/update-crdb-statefulset.py \
-    https://cockroach-cloudformation.s3.amazonaws.com/kubernetes/scripts/cockroachdb-statefulset.yaml \
+    {{StatefulSetConfigUrl}} \
     --size {{CockroachVolumeSize}} --version-tag {{CockroachDockerVersionTag}} --locality $LOCALITY \
     --attrs=$ATTRS --replicas={{CockroachNodeCount}} > /tmp/cockroachdb-statefulset.yaml
 
 kubectl apply -f /tmp/cockroachdb-statefulset.yaml
-kubectl apply -f https://raw.githubusercontent.com/cockroachdb/cockroach/master/cloud/kubernetes/cluster-init.yaml
+kubectl apply -f https://raw.githubusercontent.com/cockroachdb/cockroach/v2.0.0/cloud/kubernetes/cluster-init.yaml
 kubectl apply -f {{NodePortConfigUrl}}
 
 
