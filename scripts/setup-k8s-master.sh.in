@@ -168,18 +168,4 @@ then
 
     kubectl run tpcc10 --image=cockroachdb/cockroach-unstable --labels app=cockroachdb -- \
     workload run tpcc --warehouses 10 --drop --tolerate-errors "postgresql://root@cockroachdb-public:26257?application_name=tpcc&sslmode=disable"
-elif [[ "{{Workload}}"  =~ MovR ]]
-then
-
-    kubectl run create-movr-db --image=cockroachdb/cockroach --restart=OnFailure -- \
-    sql --insecure --host=cockroachdb-0.cockroachdb -e  \
-    "CREATE DATABASE movr"
-
-    kubectl run movr-load --image=natestewart/movr --restart=OnFailure --labels app=cockroachdb -- \
-    --url "postgresql://root@cockroachdb-public:26257/movr?application_name=movr&sslmode=disable" --num-threads 1 load --num-users 100 --num-rides 100 --num-vehicles 10
-
-    sleep 10
-
-    kubectl run movr-run --image=natestewart/movr --labels app=cockroachdb -- \
-    --url "postgresql://root@cockroachdb-public:26257/movr?application_name=movr&sslmode=disable" --num-threads $CONCURRENCY run
 fi

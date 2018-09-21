@@ -224,7 +224,6 @@ Parameters:
     - Evenly Distributed (KV)
     - Internet-style (YCSB)
     - OLTP (TPC-C 10)
-    - Fictional ridesharing app (MovR)
 
   WorkloadConcurrency:
     Description: 'The number of concurrent connections the workload generator will create'
