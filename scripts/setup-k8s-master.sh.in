@@ -138,6 +138,7 @@ kubectl apply -f {{NodePortConfigUrl}}
 #create job to associate {{Region}} with {{RegionLatitude}}, {{RegionLongitude}}"
 
 
+# populate lat longs for map
 kubectl run set-locality-coordinates --image=cockroachdb/cockroach --restart=OnFailure -- \
 sql --insecure --host=cockroachdb-0.cockroachdb -e  \
 "INSERT INTO system.locations (\"localityKey\", \"localityValue\", latitude, longitude) VALUES ('region', '{{Region}}', {{RegionLatitude}}, {{RegionLongitude}})"
@@ -152,9 +153,32 @@ CONCURRENCY=$(({{CockroachNodeCount}} * 10))
 if [[ "{{Workload}}"  =~ KV ]]
 then
     kubectl run kv --image=cockroachdb/loadgen-kv -- \
-    -drop=false -concurrency $CONCURRENCY -read-percent 95 -splits $NUMSPLITS -tolerate-errors "postgresql://root@cockroachdb-public:26257?application_name=cockroach&sslmode=disable"
+    -drop=false -concurrency $CONCURRENCY -read-percent 95 -splits $NUMSPLITS -tolerate-errors "postgresql://root@cockroachdb-public:26257?application_name=kv&sslmode=disable"
 elif [[ "{{Workload}}"  =~ YCSB ]]
 then
     kubectl run ycsb --image=cockroachdb/loadgen-ycsb -- \
-    -drop=false -concurrency $CONCURRENCY -splits $NUMSPLITS -tolerate-errors "postgresql://root@cockroachdb-public:26257?application_name=cockroach&sslmode=disable"
+    -drop=false -concurrency $CONCURRENCY -splits $NUMSPLITS -tolerate-errors "postgresql://root@cockroachdb-public:26257?application_name=ycsb&sslmode=disable"
+elif [[ "{{Workload}}"  =~ "TPC-C 10"]]
+then
+
+    kubectl run create-movr-db --image=cockroachdb/cockroach --restart=OnFailure -- \
+    sql --insecure --host=cockroachdb-0.cockroachdb -e  \
+    "CREATE DATABASE tpcc"
+
+    kubectl run tpcc10 --image=cockroachdb/cockroach-unstable -- \
+    workload run tpcc --warehouses 10 --drop --tolerate-errors "postgresql://root@cockroachdb-public:26257?application_name=tpcc&sslmode=disable"
+elif [[ "{{Workload}}"  =~ MovR ]]
+then
+
+    kubectl run create-movr-db --image=cockroachdb/cockroach --restart=OnFailure -- \
+    sql --insecure --host=cockroachdb-0.cockroachdb -e  \
+    "CREATE DATABASE movr"
+
+    kubectl run movr-load --image=natestewart/movr -- \
+    --url "postgresql://root@cockroachdb-public:26257/movr?application_name=movr&sslmode=disable" --num-threads $CONCURRENCY load --num-users 100 --num-rides 100 --num-vehicles 10
+
+    sleep 10
+
+    kubectl run movr-run --image=natestewart/movr -- \
+    --url "postgresql://root@cockroachdb-public:26257/movr?application_name=movr&sslmode=disable" --num-threads $CONCURRENCY run
 fi
