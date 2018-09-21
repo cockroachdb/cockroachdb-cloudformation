@@ -12,8 +12,12 @@
         "ParameterValue": "5"
     },
     {
+        "ParameterKey": "Workload",
+        "ParameterValue": "OLTP (TPC-C 10)"
+    },
+    {
         "ParameterKey": "Version",
-        "ParameterValue": "Pre-release"
+        "ParameterValue": "Stable"
     },
     {
         "ParameterKey": "QSS3BucketName",
