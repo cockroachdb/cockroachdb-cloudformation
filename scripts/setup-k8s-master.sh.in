@@ -153,20 +153,20 @@ CONCURRENCY=$(({{CockroachNodeCount}} * {{WorkloadConcurrency}}))
 
 if [[ "{{Workload}}"  =~ KV ]]
 then
-    kubectl run kv --image=cockroachdb/loadgen-kv -- \
+    kubectl run kv --image=cockroachdb/loadgen-kv --labels app=cockroachdb -- \
     -drop=false -concurrency $CONCURRENCY -read-percent 95 -splits $NUMSPLITS -tolerate-errors "postgresql://root@cockroachdb-public:26257?application_name=kv&sslmode=disable"
 elif [[ "{{Workload}}"  =~ YCSB ]]
 then
-    kubectl run ycsb --image=cockroachdb/loadgen-ycsb -- \
+    kubectl run ycsb --image=cockroachdb/loadgen-ycsb --labels app=cockroachdb -- \
     -drop=false -concurrency $CONCURRENCY -splits $NUMSPLITS -tolerate-errors "postgresql://root@cockroachdb-public:26257?application_name=ycsb&sslmode=disable"
 elif [[ "{{Workload}}"  =~ "TPC-C 10" ]]
 then
 
-    kubectl run create-movr-db --image=cockroachdb/cockroach --restart=OnFailure -- \
+    kubectl run create-tpcc-db --image=cockroachdb/cockroach --restart=OnFailure -- \
     sql --insecure --host=cockroachdb-0.cockroachdb -e  \
     "CREATE DATABASE tpcc"
 
-    kubectl run tpcc10 --image=cockroachdb/cockroach-unstable -- \
+    kubectl run tpcc10 --image=cockroachdb/cockroach-unstable --labels app=cockroachdb -- \
     workload run tpcc --warehouses 10 --drop --tolerate-errors "postgresql://root@cockroachdb-public:26257?application_name=tpcc&sslmode=disable"
 elif [[ "{{Workload}}"  =~ MovR ]]
 then
@@ -175,11 +175,11 @@ then
     sql --insecure --host=cockroachdb-0.cockroachdb -e  \
     "CREATE DATABASE movr"
 
-    kubectl run movr-load --image=natestewart/movr -- \
+    kubectl run movr-load --image=natestewart/movr --restart=OnFailure --labels app=cockroachdb -- \
     --url "postgresql://root@cockroachdb-public:26257/movr?application_name=movr&sslmode=disable" --num-threads $CONCURRENCY load --num-users 100 --num-rides 100 --num-vehicles 10
 
     sleep 10
 
-    kubectl run movr-run --image=natestewart/movr -- \
+    kubectl run movr-run --image=natestewart/movr --labels app=cockroachdb -- \
     --url "postgresql://root@cockroachdb-public:26257/movr?application_name=movr&sslmode=disable" --num-threads $CONCURRENCY run
 fi
