@@ -192,13 +192,11 @@ Parameters:
     Type: String
 
   InitialCockroachClusterSize:
-    Default: '0'
+    Default: '1'
     Description: Initial number of CockroachDB instances.
     Type: Number
     AllowedValues:
-    - 0
     - 1
-    - 2
     - 3
     - 4
     - 5
