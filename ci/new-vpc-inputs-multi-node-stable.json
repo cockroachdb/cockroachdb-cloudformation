@@ -13,7 +13,7 @@
     },
     {
         "ParameterKey": "K8sNodeCapacity",
-        "ParameterValue": "3"
+        "ParameterValue": "5"
     },
     {
         "ParameterKey": "InstanceType",

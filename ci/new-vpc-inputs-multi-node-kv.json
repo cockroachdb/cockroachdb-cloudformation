@@ -13,19 +13,15 @@
     },
     {
         "ParameterKey": "K8sNodeCapacity",
-        "ParameterValue": "3"
+        "ParameterValue": "5"
     },
     {
         "ParameterKey": "InstanceType",
         "ParameterValue": "t2.medium"
     },
     {
-        "ParameterKey": "Workload",
-        "ParameterValue": "Evenly Distributed (KV)"
-    },
-    {
         "ParameterKey": "Version",
-        "ParameterValue": "Stable"
+        "ParameterValue": "Pre-release"
     },
     {
         "ParameterKey": "QSS3BucketName",
