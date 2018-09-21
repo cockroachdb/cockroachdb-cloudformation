@@ -25,8 +25,8 @@ tests:
       - eu-west-1
     parameter_input: new-vpc-inputs-single-node-ycsb.json
     template_file: kubernetes-cluster-with-new-vpc.template
-  multi-node-vpc-kv:
-    parameter_input: new-vpc-inputs-multi-node-kv.json
+  multi-node-vpc-alpha:
+    parameter_input: new-vpc-inputs-multi-node-pre-release.json
     template_file: kubernetes-cluster-with-new-vpc.template
 
 

@@ -17,4 +17,11 @@ You can lean more about this template by reading our [documentation](https://www
 
 If you edit this template, you can run tests using [TaskCat](https://github.com/aws-quickstart/taskcat)
 
+To run tests
+
+1. Edit the json files in the `ci` directory so the `KeyName` value references your ec2 key.
+1. Open `config.yml` and double check the regions in which the tests will run. Make sure a key with your provided name is in those regions (or edit the region config to point to regions that do contain your specified key).
+1. Run `taskcat -c cockroachdb-cloudformation/ci/config.yml -p`.
+1. The output will be in the `taskcat_outputs` directory. Simply open the `index.html` file to see the results. 
+
 *This template was originally forked from [Heptio's Kuberenets AWS Quick Start](https://github.com/heptio/aws-quickstart)*
