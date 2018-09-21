@@ -176,7 +176,7 @@ then
     "CREATE DATABASE movr"
 
     kubectl run movr-load --image=natestewart/movr --restart=OnFailure --labels app=cockroachdb -- \
-    --url "postgresql://root@cockroachdb-public:26257/movr?application_name=movr&sslmode=disable" --num-threads $CONCURRENCY load --num-users 100 --num-rides 100 --num-vehicles 10
+    --url "postgresql://root@cockroachdb-public:26257/movr?application_name=movr&sslmode=disable" --num-threads 1 load --num-users 100 --num-rides 100 --num-vehicles 10
 
     sleep 10
 
