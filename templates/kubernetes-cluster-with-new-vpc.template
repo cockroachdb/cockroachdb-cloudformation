@@ -37,12 +37,14 @@ Metadata:
       Parameters:
       - Version
       - K8sNodeCapacity
+      - InitialCockroachClusterSize
       - InstanceType
       - DiskSizeGb
     - Label:
         default: Load Generators
       Parameters:
       - Workload
+      - WorkloadConcurrency
 
     - Label:
         default: Advanced
@@ -62,13 +64,17 @@ Metadata:
       DiskSizeGb:
         default: Node Disk Size (GiB)
       K8sNodeCapacity:
-        default: Cluster Size
+        default: Kubernetes Cluster Size
       Workload:
         default: Workload
+      WorkloadConcurrency:
+        default: Concurrent Connections Per Node
       QSS3BucketName:
         default: AWS Quick Start S3 Bucket
       QSS3KeyPrefix:
         default: AWS Quick Start S3 Key Prefix
+      InitialCockroachClusterSize:
+        default: CockroachDB Cluster Size
 
 # The Parameters allow the user to pass custom settings to the stack before creation
 Parameters:
@@ -125,7 +131,7 @@ Parameters:
 
   K8sNodeCapacity:
     Default: '1'
-    Description: Initial number of CockroachDB nodes.
+    Description: Size of the Kubernetes cluster.
     Type: Number
     AllowedValues:
     - 1
@@ -151,6 +157,15 @@ Parameters:
     - None
     - Evenly Distributed (KV)
     - Internet-style (YCSB)
+    - OLTP (TPC-C 10)
+    - Fictional ridesharing app (MovR)
+
+  WorkloadConcurrency:
+    Description: 'The number of concurrent connections the workload generator will create per node.'
+    Default: 10
+    Type: Number
+    MinValue: 1
+    MaxValue: 1000
 
 
   QSS3BucketName:
@@ -175,6 +190,28 @@ Parameters:
       the scripts/ and templates/ directories in your own fork of the CockroachDB
       Quick Start assets.
     Type: String
+
+  InitialCockroachClusterSize:
+    Default: '0'
+    Description: Initial number of CockroachDB instances.
+    Type: Number
+    AllowedValues:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+    - 10
+    - 11
+    - 12
+    - 13
+    - 14
+    - 15
 
 
 Mappings:
@@ -434,6 +471,8 @@ Resources:
         KeyName: !Ref KeyName
         K8sNodeCapacity: !Ref K8sNodeCapacity
         Workload: !Ref Workload
+        WorkloadConcurrency: !Ref WorkloadConcurrency
+        InitialCockroachClusterSize: !Ref InitialCockroachClusterSize
         QSS3BucketName: !Ref QSS3BucketName
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
         ClusterAssociation: !Ref AWS::StackName

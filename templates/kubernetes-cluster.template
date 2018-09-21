@@ -45,6 +45,8 @@ Metadata:
         default: Load Generators
       Parameters:
         - Workload
+        - WorkloadConcurrency
+
     - Label:
         default: Access Configuration
       Parameters:
@@ -57,6 +59,7 @@ Metadata:
       - QSS3BucketName
       - QSS3KeyPrefix
       - ClusterAssociation
+      - InitialCockroachClusterSize
 
     ParameterLabels:
       Version:
@@ -78,15 +81,19 @@ Metadata:
       DiskSizeGb:
         default: Disk Size (GiB)
       K8sNodeCapacity:
-        default: Cluster Size
+        default: Kubernetes Cluster Size
       Workload:
         default: Load Generator
+      WorkloadConcurrency:
+        default: Concurrent Connections
       QSS3BucketName:
         default: S3 Bucket
       QSS3KeyPrefix:
         default: S3 Key Prefix
       ClusterAssociation:
         default: Cluster Association
+      InitialCockroachClusterSize:
+        default: CockroachDB Cluster Size
       LoadBalancerSubnetId:
         default: Load Balancer Subnet
 
@@ -190,7 +197,7 @@ Parameters:
   # You can scale up your cluster later and add more nodes
   K8sNodeCapacity:
     Default: '1'
-    Description: Initial number of CockroachDB nodes.
+    Description: Size of the Kubernetes cluster.
     Type: Number
     AllowedValues:
     - 1
@@ -216,6 +223,15 @@ Parameters:
     - None
     - Evenly Distributed (KV)
     - Internet-style (YCSB)
+    - OLTP (TPC-C 10)
+    - Fictional ridesharing app (MovR)
+
+  WorkloadConcurrency:
+    Description: 'The number of concurrent connections the workload generator will create'
+    Default: 10
+    Type: Number
+    MinValue: 1
+    MaxValue: 1000
 
   # S3 Bucket configuration: allows users to use their own downstream snapshots
   # of the quickstart-aws-vpc and quickstart-linux-bastion templates
@@ -241,6 +257,28 @@ Parameters:
       the scripts/ and templates/ directories of your own fork of the CockroachDB
       Quick Start assets.
     Type: String
+
+  InitialCockroachClusterSize:
+    Default: '0'
+    Description: Excess capacity nodes for horizontally scaling CockroachDB instances.
+    Type: Number
+    AllowedValues:
+    - 0
+    - 1
+    - 2
+    - 3
+    - 4
+    - 5
+    - 6
+    - 7
+    - 8
+    - 9
+    - 10
+    - 11
+    - 12
+    - 13
+    - 14
+    - 15
 
 
 # http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/mappings-section-structure.html
@@ -395,7 +433,7 @@ Resources:
               source: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/scripts/create-healthcheck.sh.in"
               mode: '000755'
               context:
-                CockroachNodeCount: !Ref K8sNodeCapacity
+                CockroachNodeCount: !Ref InitialCockroachClusterSize
 
             "/tmp/update-healthcheck.sh":
               source: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/scripts/update-healthcheck.sh"
@@ -469,9 +507,10 @@ Resources:
                     - VersionTagMap
                     - !Ref Version
                     - 'image'
-                CockroachNodeCount: !Ref K8sNodeCapacity
+                CockroachNodeCount: !Ref InitialCockroachClusterSize
                 CockroachVolumeSize: !Ref DiskSizeGb
                 Workload: !Ref Workload
+                WorkloadConcurrency: !Ref WorkloadConcurrency
 
           services:
             sysvinit:

@@ -39,6 +39,7 @@ test -n "{{StatefulSetConfigUrl}}"
 test -n "{{RegionLatitude}}"
 test -n "{{RegionLongitude}}"
 test -n "{{Workload}}"
+test -n "{{WorkloadConcurrency}}"
 
 # kubeadm wants lowercase for DNS (as it probably should)
 LB_DNS=$(echo "{{LoadBalancerDns}}" | tr 'A-Z' 'a-z')
@@ -148,7 +149,7 @@ sql --insecure --host=cockroachdb-0.cockroachdb -e  \
 NUMSPLITS=$((({{CockroachNodeCount}} - 1) * 5))
 
 # scale concurrency with node count
-CONCURRENCY=$(({{CockroachNodeCount}} * 10))
+CONCURRENCY=$(({{CockroachNodeCount}} * {{WorkloadConcurrency}}))
 
 if [[ "{{Workload}}"  =~ KV ]]
 then
