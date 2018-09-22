@@ -159,7 +159,7 @@ elif [[ "{{Workload}}"  =~ YCSB ]]
 then
     kubectl run ycsb --image=cockroachdb/loadgen-ycsb --labels app=cockroachdb -- \
     -drop=false -concurrency $CONCURRENCY -splits $NUMSPLITS -tolerate-errors "postgresql://root@cockroachdb-public:26257?application_name=ycsb&sslmode=disable"
-elif [[ "{{Workload}}"  =~ "TPC-C 10" ]]
+elif [[ "{{Workload}}"  =~ "TPC-C 100" ]]
 then
 
     kubectl run create-tpcc-db --image=cockroachdb/cockroach --restart=OnFailure -- \
@@ -167,5 +167,5 @@ then
     "CREATE DATABASE tpcc"
 
     kubectl run tpcc10 --image=cockroachdb/cockroach-unstable --labels app=cockroachdb -- \
-    workload run tpcc --warehouses 10 --drop --tolerate-errors "postgresql://root@cockroachdb-public:26257?application_name=tpcc&sslmode=disable"
+    workload run tpcc --warehouses 100 --drop --tolerate-errors "postgresql://root@cockroachdb-public:26257?application_name=tpcc&sslmode=disable"
 fi

@@ -17,6 +17,13 @@ You can lean more about this template by reading our [documentation](https://www
 
 If you edit this template, you can run tests using [TaskCat](https://github.com/aws-quickstart/taskcat)
 
+Prerequisites: `docker`
+
+```
+curl -s https://raw.githubusercontent.com/aws-quickstart/taskcat/master/installer/docker-install-master| sudo python -E
+```
+Note: (If you do not have root privileges Taskcat will install in the current directory)
+
 To run tests
 
 1. Edit the json files in the `ci` directory so the `KeyName` value references your ec2 key.

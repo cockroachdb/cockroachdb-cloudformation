@@ -223,7 +223,7 @@ Parameters:
     - None
     - Evenly Distributed (KV)
     - Internet-style (YCSB)
-    - OLTP (TPC-C 10)
+    - OLTP (TPC-C 100)
 
   WorkloadConcurrency:
     Description: 'The number of concurrent connections the workload generator will create'
