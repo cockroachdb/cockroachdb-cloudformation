@@ -164,7 +164,7 @@ then
     kubectl run create-tpcc-db --image=cockroachdb/cockroach --restart=OnFailure -- \
     sql --insecure --host=cockroachdb-0.cockroachdb -e  \
     "CREATE DATABASE tpcc"
-    #for tpcc concurrency should be a function of workload, so using the default 10 * number of warehouses
-    kubectl run tpcc1 --image=cockroachdb/cockroach-unstable --labels app=cockroachdb -- \
-    workload run tpcc --warehouses 1 --drop --init --tolerate-errors "postgresql://root@cockroachdb-public:26257?application_name=tpcc&sslmode=disable"
+
+    kubectl run tpcc100 --image=cockroachdb/cockroach-unstable --labels app=cockroachdb -- \
+    workload run tpcc --warehouses 100 --drop --init --tolerate-errors "postgresql://root@${LB_DNS}:26257?application_name=tpcc&sslmode=disable"
 fi
