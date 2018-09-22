@@ -220,7 +220,6 @@ Parameters:
     - None
     - Evenly Distributed (KV)
     - Internet-style (YCSB)
-    - OLTP (TPC-C 100)
 
 
   # S3 Bucket configuration: allows users to use their own downstream snapshots

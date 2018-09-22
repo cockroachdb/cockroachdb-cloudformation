@@ -10,11 +10,6 @@ tests:
   multi-node-vpc:
     parameter_input: new-vpc-inputs-multi-node-stable.json
     template_file: kubernetes-cluster-with-new-vpc.template
-  single-node-vpc-alpha:
-    regions:
-      - eu-west-1
-    parameter_input: new-vpc-inputs-single-node-tpcc100.json
-    template_file: kubernetes-cluster-with-new-vpc.template
   single-node-vpc-kv:
     regions:
       - eu-west-1
