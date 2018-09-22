@@ -39,7 +39,6 @@ test -n "{{StatefulSetConfigUrl}}"
 test -n "{{RegionLatitude}}"
 test -n "{{RegionLongitude}}"
 test -n "{{Workload}}"
-test -n "{{WorkloadConcurrency}}"
 
 # kubeadm wants lowercase for DNS (as it probably should)
 LB_DNS=$(echo "{{LoadBalancerDns}}" | tr 'A-Z' 'a-z')
@@ -149,7 +148,7 @@ sql --insecure --host=cockroachdb-0.cockroachdb -e  \
 NUMSPLITS=$((({{CockroachNodeCount}} - 1) * 5))
 
 # scale concurrency with node count
-CONCURRENCY=$(({{CockroachNodeCount}} * {{WorkloadConcurrency}}))
+CONCURRENCY=$(({{CockroachNodeCount}} * 100))
 
 if [[ "{{Workload}}"  =~ KV ]]
 then
@@ -165,7 +164,7 @@ then
     kubectl run create-tpcc-db --image=cockroachdb/cockroach --restart=OnFailure -- \
     sql --insecure --host=cockroachdb-0.cockroachdb -e  \
     "CREATE DATABASE tpcc"
-
-    kubectl run tpcc10 --image=cockroachdb/cockroach-unstable --labels app=cockroachdb -- \
+    #for tpcc concurrency should be a function of workload, so using the default 10 * number of warehouses
+    kubectl run tpcc100 --image=cockroachdb/cockroach-unstable --labels app=cockroachdb -- \
     workload run tpcc --warehouses 100 --drop --tolerate-errors "postgresql://root@cockroachdb-public:26257?application_name=tpcc&sslmode=disable"
 fi

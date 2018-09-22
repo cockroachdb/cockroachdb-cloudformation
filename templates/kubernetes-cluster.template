@@ -225,12 +225,6 @@ Parameters:
     - Internet-style (YCSB)
     - OLTP (TPC-C 100)
 
-  WorkloadConcurrency:
-    Description: 'The number of concurrent connections the workload generator will create'
-    Default: 10
-    Type: Number
-    MinValue: 1
-    MaxValue: 1000
 
   # S3 Bucket configuration: allows users to use their own downstream snapshots
   # of the quickstart-aws-vpc and quickstart-linux-bastion templates
@@ -509,7 +503,6 @@ Resources:
                 CockroachNodeCount: !Ref InitialCockroachClusterSize
                 CockroachVolumeSize: !Ref DiskSizeGb
                 Workload: !Ref Workload
-                WorkloadConcurrency: !Ref WorkloadConcurrency
 
           services:
             sysvinit:

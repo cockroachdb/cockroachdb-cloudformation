@@ -159,12 +159,6 @@ Parameters:
     - Internet-style (YCSB)
     - OLTP (TPC-C 100)
 
-  WorkloadConcurrency:
-    Description: 'The number of concurrent connections the workload generator will create per node.'
-    Default: 10
-    Type: Number
-    MinValue: 1
-    MaxValue: 1000
 
 
   QSS3BucketName:
