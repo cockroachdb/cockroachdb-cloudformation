@@ -45,7 +45,6 @@ Metadata:
         default: Load Generators
       Parameters:
         - Workload
-        - WorkloadConcurrency
 
     - Label:
         default: Access Configuration
@@ -84,8 +83,6 @@ Metadata:
         default: Kubernetes Cluster Size
       Workload:
         default: Load Generator
-      WorkloadConcurrency:
-        default: Concurrent Connections
       QSS3BucketName:
         default: S3 Bucket
       QSS3KeyPrefix:

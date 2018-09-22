@@ -44,7 +44,6 @@ Metadata:
         default: Load Generators
       Parameters:
       - Workload
-      - WorkloadConcurrency
 
     - Label:
         default: Advanced
@@ -67,8 +66,6 @@ Metadata:
         default: Kubernetes Cluster Size
       Workload:
         default: Workload
-      WorkloadConcurrency:
-        default: Concurrent Connections Per Node
       QSS3BucketName:
         default: AWS Quick Start S3 Bucket
       QSS3KeyPrefix:
@@ -462,7 +459,6 @@ Resources:
         KeyName: !Ref KeyName
         K8sNodeCapacity: !Ref K8sNodeCapacity
         Workload: !Ref Workload
-        WorkloadConcurrency: !Ref WorkloadConcurrency
         InitialCockroachClusterSize: !Ref InitialCockroachClusterSize
         QSS3BucketName: !Ref QSS3BucketName
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
