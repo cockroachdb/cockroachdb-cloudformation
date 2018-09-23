@@ -132,6 +132,7 @@ Parameters:
     Type: Number
     AllowedValues:
     - 1
+    - 2
     - 3
     - 4
     - 5
@@ -148,7 +149,7 @@ Parameters:
 
   Workload:
     Default: 'None'
-    Description: Options for generating traffic for the cluster.
+    Description: Options for generating traffic for the cluster (for best performance, make sure there is an additional Kubernetes node allocated so the workload does not share machines with the CockroachDB servers).
     Type: String
     AllowedValues:
     - None
@@ -182,7 +183,7 @@ Parameters:
 
   InitialCockroachClusterSize:
     Default: '1'
-    Description: Initial number of CockroachDB instances.
+    Description: Initial number of CockroachDB instances (for best performance, this should be less than or equal to the number of Kubernetes nodes).
     Type: Number
     AllowedValues:
     - 1

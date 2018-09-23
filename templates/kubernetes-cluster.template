@@ -198,6 +198,7 @@ Parameters:
     Type: Number
     AllowedValues:
     - 1
+    - 2
     - 3
     - 4
     - 5
