@@ -16,6 +16,10 @@
         "ParameterValue": "5"
     },
     {
+        "ParameterKey": "InitialCockroachClusterSize",
+        "ParameterValue": "3"
+    },
+    {
         "ParameterKey": "InstanceType",
         "ParameterValue": "t2.medium"
     },

@@ -138,6 +138,7 @@ kubectl apply -f {{NodePortConfigUrl}}
 #create job to associate {{Region}} with {{RegionLatitude}}, {{RegionLongitude}}"
 
 
+# populate lat longs for map
 kubectl run set-locality-coordinates --image=cockroachdb/cockroach --restart=OnFailure -- \
 sql --insecure --host=cockroachdb-0.cockroachdb -e  \
 "INSERT INTO system.locations (\"localityKey\", \"localityValue\", latitude, longitude) VALUES ('region', '{{Region}}', {{RegionLatitude}}, {{RegionLongitude}})"
@@ -147,14 +148,14 @@ sql --insecure --host=cockroachdb-0.cockroachdb -e  \
 NUMSPLITS=$((({{CockroachNodeCount}} - 1) * 5))
 
 # scale concurrency with node count
-CONCURRENCY=$(({{CockroachNodeCount}} * 10))
+CONCURRENCY=$(({{CockroachNodeCount}} * 100))
 
 if [[ "{{Workload}}"  =~ KV ]]
 then
-    kubectl run kv --image=cockroachdb/loadgen-kv -- \
-    -drop=false -concurrency $CONCURRENCY -read-percent 95 -splits $NUMSPLITS -tolerate-errors "postgresql://root@cockroachdb-public:26257?application_name=cockroach&sslmode=disable"
+    kubectl run kv --image=cockroachdb/loadgen-kv --labels app=cockroachdb -- \
+    -drop=false -concurrency $CONCURRENCY -read-percent 95 -splits $NUMSPLITS -tolerate-errors "postgresql://root@cockroachdb-public:26257?application_name=kv&sslmode=disable"
 elif [[ "{{Workload}}"  =~ YCSB ]]
 then
-    kubectl run ycsb --image=cockroachdb/loadgen-ycsb -- \
-    -drop=false -concurrency $CONCURRENCY -splits $NUMSPLITS -tolerate-errors "postgresql://root@cockroachdb-public:26257?application_name=cockroach&sslmode=disable"
+    kubectl run ycsb --image=cockroachdb/loadgen-ycsb --labels app=cockroachdb -- \
+    -drop=false -concurrency $CONCURRENCY -splits $NUMSPLITS -tolerate-errors "postgresql://root@cockroachdb-public:26257?application_name=ycsb&sslmode=disable"
 fi
