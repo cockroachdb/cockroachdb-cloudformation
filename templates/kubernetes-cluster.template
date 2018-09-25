@@ -336,7 +336,7 @@ Mappings:
     'Stable':
       'image': 'cockroachdb/cockroach:v2.0.5'
     'Pre-release':
-      'image': 'cockroachdb/cockroach-unstable:latest'
+      'image': 'cockroachdb/cockroach-unstable:v2.1.0-beta.20180924'
 
 
 # Helper Conditions which help find the right values for resources
