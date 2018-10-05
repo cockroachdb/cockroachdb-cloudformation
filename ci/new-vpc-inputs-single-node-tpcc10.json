@@ -13,7 +13,7 @@
     },
     {
         "ParameterKey": "Workload",
-        "ParameterValue": "OLTP (TPC-C 100)"
+        "ParameterValue": "OLTP (TPC-C 10)"
     },
     {
         "ParameterKey": "Version",

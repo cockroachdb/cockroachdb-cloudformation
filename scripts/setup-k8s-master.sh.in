@@ -41,7 +41,7 @@ test -n "{{RegionLongitude}}"
 test -n "{{Workload}}"
 test -n "{{KVWorkloadConfigUrl}}"
 test -n "{{YCSBWorkloadConfigUrl}}"
-test -n "{{TPCC100WorkloadConfigUrl}}"
+test -n "{{TPCC10WorkloadConfigUrl}}"
 
 # kubeadm wants lowercase for DNS (as it probably should)
 LB_DNS=$(echo "{{LoadBalancerDns}}" | tr 'A-Z' 'a-z')
