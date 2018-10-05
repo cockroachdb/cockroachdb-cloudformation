@@ -39,6 +39,9 @@ test -n "{{StatefulSetConfigUrl}}"
 test -n "{{RegionLatitude}}"
 test -n "{{RegionLongitude}}"
 test -n "{{Workload}}"
+test -n "{{KVWorkloadConfigUrl}}"
+test -n "{{YCSBWorkloadConfigUrl}}"
+test -n "{{TPCC100WorkloadConfigUrl}}"
 
 # kubeadm wants lowercase for DNS (as it probably should)
 LB_DNS=$(echo "{{LoadBalancerDns}}" | tr 'A-Z' 'a-z')
@@ -152,10 +155,11 @@ CONCURRENCY=$(({{CockroachNodeCount}} * 100))
 
 if [[ "{{Workload}}"  =~ KV ]]
 then
-    kubectl run kv --image=cockroachdb/loadgen-kv --labels app=cockroachdb -- \
-    -drop=false -concurrency $CONCURRENCY -read-percent 95 -splits $NUMSPLITS -tolerate-errors "postgresql://root@cockroachdb-public:26257?application_name=kv&sslmode=disable"
+    kubectl create -f {{KVWorkloadConfigUrl}}
 elif [[ "{{Workload}}"  =~ YCSB ]]
 then
-    kubectl run ycsb --image=cockroachdb/loadgen-ycsb --labels app=cockroachdb -- \
-    -drop=false -concurrency $CONCURRENCY -splits $NUMSPLITS -tolerate-errors "postgresql://root@cockroachdb-public:26257?application_name=ycsb&sslmode=disable"
+    kubectl create -f {{YCSBWorkloadConfigUrl}}
+elif [[ "{{Workload}}"  =~ "TPC-C 10" ]]
+then
+    kubectl create -f {{TPCC100WorkloadConfigUrl}}
 fi

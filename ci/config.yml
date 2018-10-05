@@ -20,6 +20,11 @@ tests:
       - eu-west-1
     parameter_input: new-vpc-inputs-single-node-ycsb.json
     template_file: kubernetes-cluster-with-new-vpc.template
+  single-node-vpc-tpcc10:
+    regions:
+      - eu-west-1
+    parameter_input: new-vpc-inputs-single-node-tpcc10.json
+    template_file: kubernetes-cluster-with-new-vpc.template
   multi-node-vpc-alpha:
     parameter_input: new-vpc-inputs-multi-node-pre-release.json
     template_file: kubernetes-cluster-with-new-vpc.template

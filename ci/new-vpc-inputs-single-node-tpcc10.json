@@ -12,20 +12,12 @@
         "ParameterValue": "5"
     },
     {
-        "ParameterKey": "K8sNodeCapacity",
-        "ParameterValue": "3"
-    },
-    {
-        "ParameterKey": "InitialCockroachClusterSize",
-        "ParameterValue": "3"
-    },
-    {
-        "ParameterKey": "InstanceType",
-        "ParameterValue": "t2.medium"
+        "ParameterKey": "Workload",
+        "ParameterValue": "OLTP (TPC-C 100)"
     },
     {
         "ParameterKey": "Version",
-        "ParameterValue": "Pre-release"
+        "ParameterValue": "Stable"
     },
     {
         "ParameterKey": "QSS3BucketName",
