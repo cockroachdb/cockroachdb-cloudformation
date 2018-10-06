@@ -161,5 +161,5 @@ then
     kubectl create -f {{YCSBWorkloadConfigUrl}}
 elif [[ "{{Workload}}"  =~ "TPC-C 10" ]]
 then
-    kubectl create -f {{TPCC100WorkloadConfigUrl}}
+    kubectl create -f {{TPCC10WorkloadConfigUrl}}
 fi
