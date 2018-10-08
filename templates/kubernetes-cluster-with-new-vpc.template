@@ -155,6 +155,7 @@ Parameters:
     - None
     - Evenly Distributed (KV)
     - Internet-style (YCSB)
+    - OLTP (TPC-C 10)
 
 
 

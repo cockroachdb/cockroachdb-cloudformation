@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kv
+spec:
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+            - key: app
+              operator: In
+              values:
+              - cockroachdb
+          topologyKey: kubernetes.io/hostname
+  containers:
+  - name: kv
+    image: cockroachdb/loadgen-kv
+    args: ["-concurrency=256", "-splits=1000", "-read-percent=95", "-tolerate-errors", "postgresql://root@cockroachdb-public:26257?application_name=kv&sslmode=disable"]
+

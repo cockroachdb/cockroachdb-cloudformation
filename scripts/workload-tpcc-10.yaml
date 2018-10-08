@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: tpcc-10
+spec:
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+            - key: app
+              operator: In
+              values:
+              - cockroachdb
+          topologyKey: kubernetes.io/hostname
+  containers:
+  - name: tpcc-10
+    image: cockroachdb/cockroach-unstable
+    command:
+          - "/bin/bash"
+          - "-ecx"
+          - "exec /cockroach/cockroach workload run tpcc --drop --warehouses 10 \"postgresql://root@cockroachdb-public:26257?application_name=tpcc&sslmode=disable\""
