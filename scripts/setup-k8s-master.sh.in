@@ -160,10 +160,10 @@ then
 elif [[ "{{Workload}}"  =~ YCSB ]]
 then
     kubectl create -f {{YCSBWorkloadConfigUrl}}
-elif [[ "{{Workload}}"  =~ "TPC-C 10" ]]
-then
-    kubectl create -f {{TPCC10WorkloadConfigUrl}}
 elif [[ "{{Workload}}"  =~ "TPC-C 100" ]]
 then
     kubectl create -f {{TPCC100WorkloadConfigUrl}}
+elif [[ "{{Workload}}"  =~ "TPC-C 10" ]]
+then
+    kubectl create -f {{TPCC10WorkloadConfigUrl}}
 fi
