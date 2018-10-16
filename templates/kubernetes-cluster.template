@@ -222,6 +222,7 @@ Parameters:
     - Evenly Distributed (KV)
     - Internet-style (YCSB)
     - OLTP (TPC-C 10)
+    - OLTP (TPC-C 100)
 
 
   # S3 Bucket configuration: allows users to use their own downstream snapshots
@@ -481,6 +482,7 @@ Resources:
                 KVWorkloadConfigUrl: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/scripts/workload-kv.yaml"
                 YCSBWorkloadConfigUrl: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/scripts/workload-ycsb.yaml"
                 TPCC10WorkloadConfigUrl: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/scripts/workload-tpcc-10.yaml"
+                TPCC100WorkloadConfigUrl: !Sub "https://${QSS3BucketName}.s3.amazonaws.com/${QSS3KeyPrefix}/scripts/workload-tpcc-100.yaml"
                 Region: !Ref AWS::Region
                 AvailabilityZone: !Ref AvailabilityZone
                 RegionLatitude:
