@@ -156,6 +156,7 @@ Parameters:
     - Evenly Distributed (KV)
     - Internet-style (YCSB)
     - OLTP (TPC-C 10)
+    - OLTP (TPC-C 100)
 
 
 

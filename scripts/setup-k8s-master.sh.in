@@ -42,6 +42,7 @@ test -n "{{Workload}}"
 test -n "{{KVWorkloadConfigUrl}}"
 test -n "{{YCSBWorkloadConfigUrl}}"
 test -n "{{TPCC10WorkloadConfigUrl}}"
+test -n "{{TPCC100WorkloadConfigUrl}}"
 
 # kubeadm wants lowercase for DNS (as it probably should)
 LB_DNS=$(echo "{{LoadBalancerDns}}" | tr 'A-Z' 'a-z')
@@ -162,4 +163,7 @@ then
 elif [[ "{{Workload}}"  =~ "TPC-C 10" ]]
 then
     kubectl create -f {{TPCC10WorkloadConfigUrl}}
+elif [[ "{{Workload}}"  =~ "TPC-C 100" ]]
+then
+    kubectl create -f {{TPCC100WorkloadConfigUrl}}
 fi
