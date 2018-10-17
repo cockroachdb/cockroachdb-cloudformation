@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: tpcc-100
+  name: {{WorkloadName}}
 spec:
   affinity:
     podAntiAffinity:
@@ -16,9 +16,8 @@ spec:
               - cockroachdb
           topologyKey: kubernetes.io/hostname
   containers:
-  - name: tpcc-100
-    image: cockroachdb/cockroach-unstable
-    command:
-          - "/bin/bash"
-          - "-ecx"
-          - "exec /cockroach/cockroach workload run tpcc --drop --warehouses 100 \"postgresql://root@cockroachdb-public:26257?application_name=tpcc&sslmode=disable\""
+  - name: {{WorkloadName}}
+    image: natestewart/cloudformation-oltpbench
+    args: ["-w", "{{WorkloadName}}", "-i","cockroachdb-public", "-l", "-t","{{WorkloadConcurrency}}", "-s","{{ScaleFactor}}", "-m","2592000"]
+    
+

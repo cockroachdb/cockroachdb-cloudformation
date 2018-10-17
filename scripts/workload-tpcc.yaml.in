@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: tpcc-10
+  name: tpcc-{{ScaleFactor}}
 spec:
   affinity:
     podAntiAffinity:
@@ -16,9 +16,9 @@ spec:
               - cockroachdb
           topologyKey: kubernetes.io/hostname
   containers:
-  - name: tpcc-10
+  - name: tpcc-{{ScaleFactor}}
     image: cockroachdb/cockroach-unstable
     command:
           - "/bin/bash"
           - "-ecx"
-          - "exec /cockroach/cockroach workload run tpcc --drop --warehouses 10 \"postgresql://root@cockroachdb-public:26257?application_name=tpcc&sslmode=disable\""
+          - "exec /cockroach/cockroach workload run tpcc --drop --warehouses {{ScaleFactor}} \"postgresql://root@cockroachdb-public:26257?application_name=tpcc-{{ScaleFactor}}&sslmode=disable\""
