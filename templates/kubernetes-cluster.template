@@ -227,7 +227,6 @@ Parameters:
     - TPC-C
     - AuctionMark
     - LinkBench
-    - Seats
     - TATP
     - Voter
     - Epinions
@@ -376,8 +375,6 @@ Mappings:
         'oltpbenchname': 'auctionmark'
     'LinkBench':
         'oltpbenchname': 'linkbench'
-    'Seats':
-        'oltpbenchname': 'seats'
     'TATP':
         'oltpbenchname': 'tatp'
     'Voter':
