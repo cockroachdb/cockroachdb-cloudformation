@@ -39,10 +39,9 @@ test -n "{{StatefulSetConfigUrl}}"
 test -n "{{RegionLatitude}}"
 test -n "{{RegionLongitude}}"
 test -n "{{Workload}}"
-test -n "{{KVWorkloadConfigUrl}}"
-test -n "{{YCSBWorkloadConfigUrl}}"
-test -n "{{TPCC10WorkloadConfigUrl}}"
-test -n "{{TPCC100WorkloadConfigUrl}}"
+test -n "{{TPCCWorkloadConfigPath}}"
+test -n "{{KVWorkloadConfigPath}}"
+test -n "{{OLTPBenchConfigPath}}"
 
 # kubeadm wants lowercase for DNS (as it probably should)
 LB_DNS=$(echo "{{LoadBalancerDns}}" | tr 'A-Z' 'a-z')
@@ -147,23 +146,17 @@ kubectl run set-locality-coordinates --image=cockroachdb/cockroach --restart=OnF
 sql --insecure --host=cockroachdb-0.cockroachdb -e  \
 "INSERT INTO system.locations (\"localityKey\", \"localityValue\", latitude, longitude) VALUES ('region', '{{Region}}', {{RegionLatitude}}, {{RegionLongitude}})"
 
-
-# make sure there isn't a single range with one lease holder doing all the work.
-NUMSPLITS=$((({{CockroachNodeCount}} - 1) * 5))
-
-# scale concurrency with node count
-CONCURRENCY=$(({{CockroachNodeCount}} * 100))
-
-if [[ "{{Workload}}"  =~ KV ]]
+if [[ "{{Workload}}"  =~ None ]]
 then
-    kubectl create -f {{KVWorkloadConfigUrl}}
-elif [[ "{{Workload}}"  =~ YCSB ]]
+    echo "no workload selected"
+elif [[ "{{Workload}}"  =~ KeyValue ]]
 then
-    kubectl create -f {{YCSBWorkloadConfigUrl}}
-elif [[ "{{Workload}}"  =~ "TPC-C 100" ]]
+    echo "Overriding oltpbench for KV. Scalefactor settings will be ignored."
+    kubectl create -f {{KVWorkloadConfigPath}}
+elif [[ "{{Workload}}"  =~ TPC-C ]]
 then
-    kubectl create -f {{TPCC100WorkloadConfigUrl}}
-elif [[ "{{Workload}}"  =~ "TPC-C 10" ]]
-then
-    kubectl create -f {{TPCC10WorkloadConfigUrl}}
+    echo "Overriding oltpbench for TPC-C. Concurrency settings will be ignored (concurrency is 10 * ScaleFactor)."
+    kubectl create -f {{TPCCWorkloadConfigPath}}
+else
+    kubectl create -f {{OLTPBenchConfigPath}}
 fi

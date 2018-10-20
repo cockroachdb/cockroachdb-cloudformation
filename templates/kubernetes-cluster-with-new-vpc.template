@@ -14,13 +14,13 @@
 
 ---
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'Create a Kubernetes-orchestrated CockroachDB cluster in a new VPC.
+Description: 'Create an insecure Kubernetes-orchestrated CockroachDB test cluster in a new VPC.
   The Kubernetes master node is an auto-recovering Amazon EC2 instance. 1-15
   additional EC2 instances in an Auto Scaling group join the Kubernetes cluster as nodes.
   An ELB provides external access to the cluster. The VPC includes a bastion host
   to grant SSH access to the Kubernetes cluster''s private subnet. This stack is not suitable
   for production use due to its minimal security and durability guarantees.
-  **WARNING** This template creates several Amazon EC2 instances ( [Cluster Size] nodes + 1 K8s master node + 1 t2.micro bastion host).
+  **WARNING** This template creates several Amazon EC2 instances ( [K8s cluster size] nodes + 1 K8s master node + 1 t2.micro bastion host).
   AWS will bill you for the resources this template uses.'
 
 # The Metadata tells AWS how to display the parameters during stack creation
@@ -44,6 +44,8 @@ Metadata:
         default: Load Generators
       Parameters:
       - Workload
+      - ScaleFactor
+      - Concurrency
 
     - Label:
         default: Advanced
@@ -66,6 +68,8 @@ Metadata:
         default: Kubernetes Cluster Size
       Workload:
         default: Workload
+      ScaleFactor:
+        default: Scale Factor
       QSS3BucketName:
         default: AWS Quick Start S3 Bucket
       QSS3KeyPrefix:
@@ -153,11 +157,32 @@ Parameters:
     Type: String
     AllowedValues:
     - None
-    - Evenly Distributed (KV)
-    - Internet-style (YCSB)
-    - OLTP (TPC-C 10)
-    - OLTP (TPC-C 100)
+    - KeyValue
+    - TPC-C
+    - AuctionMark
+    - LinkBench
+    - TATP
+    - Voter
+    - Epinions
+    - SIBench
+    - SmallBank
+    - YCSB
+    - Wikipedia
+    - ResourceStresser
 
+  ScaleFactor:
+    Default: 1
+    Description: Scales the amount of data in certain workloads. For example, for TPC-C this corresponds to the number of warehouses.
+    Type: Number
+    MinValue: 1
+    MaxValue: 1024
+
+  Concurrency:
+    Default: 1
+    Description: The number of concurrent connections for every load generator except for TPC-C.
+    Type: Number
+    MinValue: 1
+    MaxValue: 4096
 
 
   QSS3BucketName:
@@ -461,6 +486,8 @@ Resources:
         KeyName: !Ref KeyName
         K8sNodeCapacity: !Ref K8sNodeCapacity
         Workload: !Ref Workload
+        Concurrency: !Ref Concurrency
+        ScaleFactor: !Ref ScaleFactor
         InitialCockroachClusterSize: !Ref InitialCockroachClusterSize
         QSS3BucketName: !Ref QSS3BucketName
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
