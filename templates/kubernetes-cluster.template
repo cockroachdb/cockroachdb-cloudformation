@@ -380,7 +380,7 @@ Mappings:
     'Voter':
         'oltpbenchname': 'voter'
     'Epinions':
-        'oltpbenchname': 'epinions '
+        'oltpbenchname': 'epinions'
     'SIBench':
         'oltpbenchname': 'sibench'
     'SmallBank':
