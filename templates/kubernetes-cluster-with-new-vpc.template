@@ -14,13 +14,13 @@
 
 ---
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'Create a Kubernetes-orchestrated CockroachDB cluster in a new VPC.
+Description: 'Create an insecure Kubernetes-orchestrated CockroachDB test cluster in a new VPC.
   The Kubernetes master node is an auto-recovering Amazon EC2 instance. 1-15
   additional EC2 instances in an Auto Scaling group join the Kubernetes cluster as nodes.
   An ELB provides external access to the cluster. The VPC includes a bastion host
   to grant SSH access to the Kubernetes cluster''s private subnet. This stack is not suitable
   for production use due to its minimal security and durability guarantees.
-  **WARNING** This template creates several Amazon EC2 instances ( [Cluster Size] nodes + 1 K8s master node + 1 t2.micro bastion host).
+  **WARNING** This template creates several Amazon EC2 instances ( [K8s cluster size] nodes + 1 K8s master node + 1 t2.micro bastion host).
   AWS will bill you for the resources this template uses.'
 
 # The Metadata tells AWS how to display the parameters during stack creation

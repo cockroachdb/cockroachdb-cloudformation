@@ -13,7 +13,11 @@
     },
     {
         "ParameterKey": "Workload",
-        "ParameterValue": "Internet-style (YCSB)"
+        "ParameterValue": "YCSB"
+    },
+    {
+        "ParameterKey": "Concurrency",
+        "ParameterValue": "256"
     },
     {
         "ParameterKey": "Version",

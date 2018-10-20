@@ -13,7 +13,7 @@
     },
     {
         "ParameterKey": "Workload",
-        "ParameterValue": "Evenly Distributed (KV)"
+        "ParameterValue": "KeyValue"
     },
     {
         "ParameterKey": "Version",
