@@ -41,6 +41,12 @@ Metadata:
       - InstanceType
       - DiskSizeGb
     - Label:
+        default: (Optional) Enterprise License Information
+      Parameters:
+      - LicenseKey
+      - Organization
+
+    - Label:
         default: Load Generators
       Parameters:
       - Workload
@@ -76,6 +82,10 @@ Metadata:
         default: AWS Quick Start S3 Key Prefix
       InitialCockroachClusterSize:
         default: CockroachDB Cluster Size
+      LicenseKey:
+        default: Enterprise License Key
+      Organization:
+        default: Organization Name
 
 # The Parameters allow the user to pass custom settings to the stack before creation
 Parameters:
@@ -227,6 +237,14 @@ Parameters:
     - 13
     - 14
     - 15
+
+  LicenseKey:
+    Description: License key to unlock enterprise features. https://www.cockroachlabs.com/pricing/start-trial/
+    Type: String
+
+  Organization:
+    Description: Organization name associated with the enterprise license key.
+    Type: String
 
 
 Mappings:
@@ -493,6 +511,8 @@ Resources:
         QSS3KeyPrefix: !Ref QSS3KeyPrefix
         ClusterAssociation: !Ref AWS::StackName
         LoadBalancerSubnetId: !Ref PublicSubnet
+        LicenseKey: !Ref LicenseKey
+        Organization: !Ref Organization
 
 Outputs:
   # Outputs from VPC creation

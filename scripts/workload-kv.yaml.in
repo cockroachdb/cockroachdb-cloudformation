@@ -18,5 +18,5 @@ spec:
   containers:
   - name: kv
     image: cockroachdb/loadgen-kv
-    args: ["-concurrency={{WorkloadConcurrency}}", "-splits=1000", "-read-percent=95", "-tolerate-errors", "postgresql://root@cockroachdb-public:26257?application_name=kv&sslmode=disable"]
+    args: ["-concurrency={{WorkloadConcurrency}}", "-splits=1000", "-read-percent=95", "-tolerate-errors", "postgresql://root@cockroachdb-public:26257?ApplicationName=kv&sslmode=disable"]
 

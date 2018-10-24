@@ -21,4 +21,4 @@ spec:
     command:
           - "/bin/bash"
           - "-ecx"
-          - "exec /cockroach/cockroach workload run tpcc --drop --warehouses {{ScaleFactor}} \"postgresql://root@cockroachdb-public:26257?application_name=tpcc-{{ScaleFactor}}&sslmode=disable\""
+          - "exec /cockroach/cockroach workload run tpcc --drop --warehouses {{ScaleFactor}} \"postgresql://root@cockroachdb-public:26257?ApplicationName=tpcc-{{ScaleFactor}}&sslmode=disable\""
