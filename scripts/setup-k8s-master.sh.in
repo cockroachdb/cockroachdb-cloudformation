@@ -146,18 +146,20 @@ kubectl run set-locality-coordinates --image=cockroachdb/cockroach --restart=OnF
 sql --insecure --host=cockroachdb-0.cockroachdb -e  \
 "INSERT INTO system.locations (\"localityKey\", \"localityValue\", latitude, longitude) VALUES ('region', '{{Region}}', {{RegionLatitude}}, {{RegionLongitude}})"
 
-# add enterprise license key if set
-if [[ !  -z  "{{LicenseKey}}"  ]]
-then
-kubectl run set-licensekey --image=cockroachdb/cockroach --restart=OnFailure -- \
-    sql --insecure --host=cockroachdb-0.cockroachdb -e  \ "SET CLUSTER SETTING enterprise.license = '{{LicenseKey}}';"
-fi
+
 
 # add organization if set
 if [[ !  -z  "{{Organization}}"  ]]
 then
 kubectl run set-organization --image=cockroachdb/cockroach --restart=OnFailure -- \
     sql --insecure --host=cockroachdb-0.cockroachdb -e  \ "SET CLUSTER SETTING cluster.organization = '{{Organization}}';"
+fi
+
+# add enterprise license key if set
+if [[ !  -z  "{{LicenseKey}}"  ]]
+then
+kubectl run set-licensekey --image=cockroachdb/cockroach --restart=OnFailure -- \
+    sql --insecure --host=cockroachdb-0.cockroachdb -e  \ "SET CLUSTER SETTING enterprise.license = '{{LicenseKey}}';"
 fi
 
 if [[ "{{Workload}}"  =~ None ]]
