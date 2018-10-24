@@ -146,6 +146,22 @@ kubectl run set-locality-coordinates --image=cockroachdb/cockroach --restart=OnF
 sql --insecure --host=cockroachdb-0.cockroachdb -e  \
 "INSERT INTO system.locations (\"localityKey\", \"localityValue\", latitude, longitude) VALUES ('region', '{{Region}}', {{RegionLatitude}}, {{RegionLongitude}})"
 
+
+
+# add organization if set
+if [[ !  -z  "{{Organization}}"  ]]
+then
+kubectl run set-organization --image=cockroachdb/cockroach --restart=OnFailure -- \
+    sql --insecure --host=cockroachdb-0.cockroachdb -e  \ "SET CLUSTER SETTING cluster.organization = '{{Organization}}';"
+fi
+
+# add enterprise license key if set
+if [[ !  -z  "{{LicenseKey}}"  ]]
+then
+kubectl run set-licensekey --image=cockroachdb/cockroach --restart=OnFailure -- \
+    sql --insecure --host=cockroachdb-0.cockroachdb -e  \ "SET CLUSTER SETTING enterprise.license = '{{LicenseKey}}';"
+fi
+
 if [[ "{{Workload}}"  =~ None ]]
 then
     echo "no workload selected"
@@ -158,5 +174,8 @@ then
     echo "Overriding oltpbench for TPC-C. Concurrency settings will be ignored (concurrency is 10 * ScaleFactor)."
     kubectl create -f {{TPCCWorkloadConfigPath}}
 else
+    kubectl run set-txn-max --image=cockroachdb/cockroach --restart=OnFailure -- \
+    sql --insecure --host=cockroachdb-0.cockroachdb -e  \ "SET CLUSTER SETTING kv.transaction.max_intents_bytes = 1256000; SET CLUSTER SETTING kv.transaction.max_refresh_spans_bytes = 1256000;"
+
     kubectl create -f {{OLTPBenchConfigPath}}
 fi
