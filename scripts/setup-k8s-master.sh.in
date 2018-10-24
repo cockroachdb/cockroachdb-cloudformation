@@ -157,7 +157,7 @@ fi
 if [[ !  -z  "{{Organization}}"  ]]
 then
 kubectl run set-organization --image=cockroachdb/cockroach --restart=OnFailure -- \
-    sql --insecure --host=cockroachdb-0.cockroachdb -e  \ "SET CLUSTER SETTING enterprise.license = '{{Organization}}';"
+    sql --insecure --host=cockroachdb-0.cockroachdb -e  \ "SET CLUSTER SETTING cluster.organization = '{{Organization}}';"
 fi
 
 if [[ "{{Workload}}"  =~ None ]]
